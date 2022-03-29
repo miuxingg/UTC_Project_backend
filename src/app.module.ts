@@ -1,23 +1,27 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CatsController } from './modules/cats/cats.controller';
 import { CatsModule } from './modules/cats/cats.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BooksModule } from './modules/books/books.module';
 import { CategoryModule } from './modules/category/category.module';
 import { AddressModule } from './modules/address/address.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { mailerOptions } from './configs/mailer.config';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { MONGO_CONNECTION } from './configs/mongodb.config';
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    MongooseModule.forRoot(
-      'mongodb+srv://bookstore:admin@cluster0.lox7k.mongodb.net/BookStore?retryWrites=true&w=majority',
-    ),
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(MONGO_CONNECTION),
+    MailerModule.forRoot(mailerOptions),
+    CacheModule.register({ isGlobal: true, ttl: 900 }),
     CatsModule,
     BooksModule,
     CategoryModule,
     AddressModule,
+    AuthModule,
   ],
-  controllers: [CatsController],
+  controllers: [],
   providers: [],
 })
 export class AppModule {}

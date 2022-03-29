@@ -12,3 +12,5 @@ export const QUERY_OPTION_DEFAULT = {
   OFFSET: 0,
   SEARCH: '',
 };
+
+export const SALT_OR_ROUNDS = 10;
