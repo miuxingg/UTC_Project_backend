@@ -46,5 +46,19 @@ export class Book {
 }
 export const bookPopulate = ['categories'];
 
+export const populateCategory = () => {
+  return [
+    { $unwind: '$category' },
+    {
+      $lookup: {
+        from: 'categories',
+        foreignField: '_id',
+        localField: 'category',
+        as: 'category',
+      },
+    },
+  ];
+};
+
 export const BookSchema = SchemaFactory.createForClass(Book);
 BookSchema.index({ name: 'text', author: 'text' });

@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ServiceBase } from 'src/common/ServiceBase';
-import { Book, BookDocument, bookPopulate } from './schema/book.schema';
+import {
+  Book,
+  BookDocument,
+  bookPopulate,
+  populateCategory,
+} from './schema/book.schema';
 import { Model, Types } from 'mongoose';
 import { BookQuery, CreateBookDto } from './dto/input.dto';
 import { aggregateQuery } from 'src/common/Aggregate';
@@ -35,20 +40,27 @@ export class BooksService extends ServiceBase<BookDocument> {
       };
     }
 
-    return await this.model.aggregate([
+    const data = await this.model.aggregate([
       { $match: match },
+      ...populateCategory(),
       ...aggregateQuery(queries),
     ]);
+
+    return data;
   }
 
   async getBookById(id: string) {
-    return await this.model.findById(id);
+    return await this.model.aggregate([
+      { $match: { _id: new Types.ObjectId(id) } },
+      ...populateCategory(),
+    ]);
   }
 
   async getBookByIds(ids: string[]) {
     const idsMapping = ids.map((id) => new Types.ObjectId(id));
     return await this.model.aggregate([
       { $match: { _id: { $in: idsMapping } } },
+      ...populateCategory(),
       ...aggregateQuery(),
     ]);
   }

@@ -1,12 +1,23 @@
 import { Expose } from 'class-transformer';
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
-export class UserRegister {
-  @Expose()
+// export class UserRegister {
+//   @Expose()
+//   @IsEmail({})
+//   email: string;
+
+//   @Expose()
+//   @IsString()
+//   password: string;
+// }
+
+export class CredentialDto {
+  @IsString()
+  @IsNotEmpty()
   @IsEmail({})
   email: string;
 
-  @Expose()
   @IsString()
+  @MinLength(6)
   password: string;
 }

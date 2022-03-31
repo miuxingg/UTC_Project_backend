@@ -40,7 +40,7 @@ export class BooksController {
 
   @Get(':id')
   async getBookById(@Param('id') idBook: string) {
-    const response = await this.bookService.getBookById(idBook);
+    const [response] = await this.bookService.getBookById(idBook);
     const data = plainToClass(BookOutputDto, response);
     return data;
   }

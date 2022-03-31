@@ -14,3 +14,5 @@ export const QUERY_OPTION_DEFAULT = {
 };
 
 export const SALT_OR_ROUNDS = 10;
+
+export const APP_SECRET = 'book.store.key.secret';

@@ -1,0 +1,17 @@
+{
+  "isNotExisted": "IS_NOT_EXISTED: $property",
+  "invalidData": "INVALID_DATA: $property",
+  "minLength": "MIN_LENGTH: $property, $constraint1",
+  "maxLength": "MAX_LENGTH: $property, $constraint1",
+  "minProperty": "MIN_PROPERTY: $property, $constraint1",
+  "maxProperty": "MAX_PROPERTY: $property, $constraint1",
+  "isNotEmpty": "IS_NOT_EMPTY: $property",
+  "invalidImage": "Image must be right format",
+  "rejectAmbassadorMessage": "AMBASSDOR_STATUS_REJECT",
+  "approveAmbassadorMessage": "AMBASSDOR_STATUS_APPROVED",
+  "pendingAmbassadorMessage": "AMBASSDOR_STATUS_PENDING",
+  "incorrectCredential": "INCORRECT_CREDENTIAL: $property",
+  "emailAlready": "EMAIL_ALREADY",
+  "campaignInvalid": "campaignInvalid",
+  "isNotExistedInOrganization": "IS_NOT_EXISTED_IN_ORGANIZATION: $property"
+}

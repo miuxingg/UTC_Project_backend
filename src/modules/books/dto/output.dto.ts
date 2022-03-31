@@ -1,13 +1,14 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { ClassBase } from 'src/common/BaseDTO';
-import { transformListIds } from 'src/utils/transformDto';
+import { CategoryOutput } from 'src/modules/category/dto/output.dto';
 
 @Exclude()
 export class BookOutputDto extends ClassBase {
   @Expose() name: string;
 
-  @Transform(transformListIds)
+  // @Transform(transformListIds)
   @Expose()
+  @Type(() => CategoryOutput)
   category: string[];
 
   @Expose() author: string;
