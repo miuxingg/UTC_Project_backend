@@ -29,3 +29,14 @@ export class BookOutputDto extends ClassBase {
 
   @Expose() status: string;
 }
+
+@Exclude()
+export class BookOutputInCart extends ClassBase {
+  @Expose() name: string;
+
+  @Expose() thumbnail: string;
+
+  @Expose() priceUnDiscount: number;
+
+  @Expose() price: number;
+}

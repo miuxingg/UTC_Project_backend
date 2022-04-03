@@ -1,7 +1,8 @@
 export const transformValidationMessage = (
   message: string,
+  field?: string,
   constraints: any[] = [],
-): string => {
+) => {
   const msgSplit = message.split(':');
   if (msgSplit.length > 1) {
     const params = msgSplit[1].split(',');
@@ -11,5 +12,5 @@ export const transformValidationMessage = (
       }
     });
   }
-  return message;
+  return { message, field };
 };

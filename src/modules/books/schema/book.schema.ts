@@ -44,11 +44,10 @@ export class Book {
   @Prop({ default: BookStatus.NONE, enum: Object.values(BookStatus) })
   status: string;
 }
-export const bookPopulate = ['categories'];
+// export const bookPopulate = ['categories'];
 
 export const populateCategory = () => {
   return [
-    { $unwind: '$category' },
     {
       $lookup: {
         from: 'categories',

@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsMongoId,
@@ -49,10 +50,12 @@ export class BookQuery extends BaseQuery {
   category?: string;
 
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
   startPrice?: number;
 
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
   endPrice?: number;
 
