@@ -56,7 +56,7 @@ export class CartController {
     @User() iamUser: IIAMUser,
     @Body() cartCreate: CreateCartDto,
   ) {
-    const user = await this.userService.findById(iamUser.id);
+    const user = await this.userService.findById(iamUser?.id);
     if (!user) {
       throw new BadRequestException(
         transformValidationMessage(messages.isNotUser, 'auth', ['User']),

@@ -1,3 +1,9 @@
+export enum DocumentStatus {
+  Approved = 'Approved',
+  Pending = 'Pending',
+  Rejected = 'Rejected',
+}
+
 export enum BookStatus {
   NONE = '',
   HOT = 'HOT',
@@ -11,4 +17,26 @@ export interface IIAMUser {
   // givenName?: string;
   // familyName?: string;
   // email?: string;
+}
+
+export enum IPaymentMethod {
+  VisaCard = 'VisaCard',
+  COD = 'COD',
+}
+
+export interface IShippingMethod {
+  firstName?: string;
+  lastName?: string;
+  provice?: string;
+  district?: string;
+  wards?: string;
+  privateHome?: string;
+  phoneNumber?: string;
+  email?: string;
+}
+
+export enum IPaymentStatus {
+  Pending = 'pending',
+  Success = 'success',
+  Rejected = 'rejected',
 }
