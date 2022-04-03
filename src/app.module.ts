@@ -11,6 +11,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { MONGO_CONNECTION } from './configs/mongodb.config';
 import { CartModule } from './modules/cart/cart.module';
 import { ServicesModule } from './modules/services/services.module';
+import { OrderModule } from './modules/order/order.module';
+import { OrderLineModule } from './modules/order-line/order-line.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -23,6 +25,8 @@ import { ServicesModule } from './modules/services/services.module';
     AddressModule,
     AuthModule,
     CartModule,
+    OrderModule,
+    OrderLineModule,
     // ServicesModule,
   ],
   controllers: [],
