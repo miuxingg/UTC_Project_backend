@@ -10,3 +10,9 @@ export const transformListIds = (param: TransformFnParams) => {
   }
   return [];
 };
+
+export const transformId = (obj, field: string) => {
+  const id = obj[field];
+  if (id) return id.toString();
+  return undefined;
+};

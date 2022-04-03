@@ -13,5 +13,9 @@
   "incorrectCredential": "INCORRECT_CREDENTIAL: $property",
   "emailAlready": "EMAIL_ALREADY",
   "campaignInvalid": "campaignInvalid",
-  "isNotExistedInOrganization": "IS_NOT_EXISTED_IN_ORGANIZATION: $property"
+  "isNotExistedInOrganization": "IS_NOT_EXISTED_IN_ORGANIZATION: $property",
+  "incorrectPassword": "incorrect.password",
+  "incorrectEmail": "incorrect.email",
+  "passwordMinLength": "password.minLength",
+  "isNotUser": "user.isNotUser"
 }

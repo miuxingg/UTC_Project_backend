@@ -4,7 +4,7 @@ import { ServiceBase } from 'src/common/ServiceBase';
 import {
   Book,
   BookDocument,
-  bookPopulate,
+  // bookPopulate,
   populateCategory,
 } from './schema/book.schema';
 import { Model, Types } from 'mongoose';
@@ -15,7 +15,7 @@ import { filterByPrice } from 'src/utils/buildQueryBook';
 @Injectable()
 export class BooksService extends ServiceBase<BookDocument> {
   constructor(@InjectModel(Book.name) bookModel: Model<BookDocument>) {
-    super(bookModel, bookPopulate);
+    super(bookModel);
   }
   async createBook(bookCreate: CreateBookDto) {
     return await this.create({ ...bookCreate });

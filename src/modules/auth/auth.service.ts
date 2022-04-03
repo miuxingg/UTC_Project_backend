@@ -9,6 +9,7 @@ import { CredentialDto } from './dto/auth.input';
 import { User, UserDocument } from './schema/auth.schema';
 import * as messages from '../resources/errorMessage.json';
 import { generateToken } from 'src/utils/generateToken';
+import { EXPRIRE_TOKEN } from 'src/configs';
 @Injectable()
 export class AuthService extends ServiceBase<UserDocument> {
   constructor(
@@ -47,7 +48,7 @@ export class AuthService extends ServiceBase<UserDocument> {
 
     if (!_isCheckEmailExist)
       throw new BadRequestException(
-        transformValidationMessage(messages.isNotExisted, ['Email']),
+        transformValidationMessage(messages.incorrectEmail, 'email', ['Email']),
       );
 
     const _isCheckPassword = await comparePassword(
@@ -57,9 +58,14 @@ export class AuthService extends ServiceBase<UserDocument> {
 
     if (!_isCheckPassword)
       throw new BadRequestException(
-        transformValidationMessage(messages.incorrectCredential, ['Password']),
+        transformValidationMessage(messages.incorrectPassword, 'password', [
+          'Password',
+        ]),
       );
 
-    return { access_token: generateToken(_isCheckEmailExist._id) };
+    return {
+      access_token: generateToken(_isCheckEmailExist._id),
+      expires_in: EXPRIRE_TOKEN,
+    };
   }
 }
