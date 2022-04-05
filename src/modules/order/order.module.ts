@@ -5,12 +5,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from './schema/order.schema';
 import { AuthModule } from '../auth/auth.module';
 import { OrderLineModule } from '../order-line/order-line.module';
+import { CartModule } from '../cart/cart.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
     AuthModule,
     OrderLineModule,
+    CartModule,
   ],
   providers: [OrderService],
   controllers: [OrderController],

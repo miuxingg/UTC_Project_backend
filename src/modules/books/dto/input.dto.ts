@@ -65,7 +65,6 @@ export class BookQuery extends BaseQuery {
 }
 
 export class BookByIds {
-  @IsMongoId()
   @IsOptional()
   ids?: string[];
 }
