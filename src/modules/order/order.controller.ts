@@ -3,6 +3,7 @@ import { plainToClass } from 'class-transformer';
 import { User } from 'src/libs/decorators/user.decorator';
 import { IIAMUser } from 'src/utils/types';
 import { AuthService } from '../auth/auth.service';
+import { CartService } from '../cart/cart.service';
 import { OrderLineService } from '../order-line/order-line.service';
 import { OrderInputDto } from './dto/input.dto';
 import { OrderOutputDto } from './dto/output.dto';
@@ -14,6 +15,7 @@ export class OrderController {
     private readonly orderService: OrderService,
     private readonly userService: AuthService,
     private readonly orderLineService: OrderLineService,
+    private readonly cartService: CartService,
   ) {}
 
   @Get()
@@ -37,8 +39,11 @@ export class OrderController {
       });
     });
 
-    const p = await Promise.all(orderLine);
-    return p;
+    const orderResponse = await Promise.all(orderLine);
+    if (user) {
+      await this.cartService.deleteCartByUser(user.id);
+    }
+    return orderResponse;
     // return plainToClass(OrderOutputDto, order);
   }
 }

@@ -37,8 +37,8 @@ export class CartController {
     }
     const [response] = await this.cartService.getAllCart(user.id, query);
     return {
-      items: plainToClass(CartOutputDto, response.items || []),
-      total: response.total || 0,
+      items: plainToClass(CartOutputDto, response?.items || []),
+      total: response?.total || 0,
     };
   }
 

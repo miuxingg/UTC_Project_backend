@@ -38,4 +38,8 @@ export class CartService extends ServiceBase<CartDocument> {
     ]);
     return response;
   }
+
+  async deleteCartByUser(userId: string) {
+    return await this.model.deleteMany({ userId: new Types.ObjectId(userId) });
+  }
 }
