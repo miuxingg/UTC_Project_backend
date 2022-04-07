@@ -7,10 +7,20 @@ import {
   populateOrderLines,
 } from './schema/order.schema';
 import { Model, Types } from 'mongoose';
+import { AuthService } from '../auth/auth.service';
+import { CartService } from '../cart/cart.service';
+import { OrderLineService } from '../order-line/order-line.service';
+import { OrderInputDto } from './dto/input.dto';
+import { IIAMUser } from 'src/utils/types';
 
 @Injectable()
 export class OrderService extends ServiceBase<OrderDocument> {
-  constructor(@InjectModel(Order.name) orderModel: Model<OrderDocument>) {
+  constructor(
+    @InjectModel(Order.name) orderModel: Model<OrderDocument>,
+    private readonly userService: AuthService,
+    private readonly orderLineService: OrderLineService,
+    private readonly cartService: CartService,
+  ) {
     super(orderModel);
   }
 
@@ -20,5 +30,26 @@ export class OrderService extends ServiceBase<OrderDocument> {
       ...populateOrderLines,
     ]);
     return order;
+  }
+
+  async createOrder(iamUser: IIAMUser, data: OrderInputDto) {
+    const user = await this.userService.findById(iamUser?.id);
+    const dataCreate = user?.id ? { ...data, user: user.id } : { ...data };
+    const order = await this.model.create(dataCreate);
+    const books = data.orderLines;
+    const orderLine = books.map(async (book) => {
+      return await this.orderLineService.create({
+        orderId: order.id,
+        bookId: book.bookId,
+        quantity: book.quantity,
+        price: book.price,
+      });
+    });
+
+    const orderResponse = await Promise.all(orderLine);
+    if (user) {
+      await this.cartService.deleteCartByUser(user.id);
+    }
+    return orderResponse;
   }
 }
