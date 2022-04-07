@@ -13,6 +13,7 @@ import { CartModule } from './modules/cart/cart.module';
 import { ServicesModule } from './modules/services/services.module';
 import { OrderModule } from './modules/order/order.module';
 import { OrderLineModule } from './modules/order-line/order-line.module';
+import { PaymentModule } from './modules/payment/payment.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -27,6 +28,7 @@ import { OrderLineModule } from './modules/order-line/order-line.module';
     CartModule,
     OrderModule,
     OrderLineModule,
+    PaymentModule,
     // ServicesModule,
   ],
   controllers: [],

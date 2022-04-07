@@ -6,11 +6,14 @@ export const User = createParamDecorator(
     keys = typeof keys === 'string' ? [keys] : keys;
 
     const request = ctx.switchToHttp().getRequest();
-    const token = request.headers.authorization.split('Bearer ')[1];
-    const { data } = verifyToken(token);
-    if (data) {
-      return data;
+    if (request.headers.authorization) {
+      const token = request.headers.authorization.split('Bearer ')[1];
+      const { data } = verifyToken(token);
+      if (data) {
+        return data;
+      }
     }
+
     return null;
   },
 );

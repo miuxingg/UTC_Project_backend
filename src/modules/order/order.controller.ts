@@ -20,29 +20,14 @@ export class OrderController {
 
   @Get()
   async getOrderLineByUser(@User() iamUser: IIAMUser) {
-    const user = await this.userService.findById(iamUser.id);
-    const [response] = await this.orderService.getAllOrderByUser(user.id);
+    const user = await this.userService.findById(iamUser?.id);
+    const [response] = await this.orderService.getAllOrderByUser(user?.id);
     // return response;
     return plainToClass(OrderOutputDto, response);
   }
   @Post()
   async createOrder(@User() iamUser: IIAMUser, @Body() data: OrderInputDto) {
-    const user = await this.userService.findById(iamUser?.id);
-    const order = await this.orderService.create({ ...data, user: user.id });
-    const books = data.orderLines;
-    const orderLine = books.map(async (book) => {
-      return await this.orderLineService.create({
-        orderId: order.id,
-        bookId: book.bookId,
-        quantity: book.quantity,
-        price: book.price,
-      });
-    });
-
-    const orderResponse = await Promise.all(orderLine);
-    if (user) {
-      await this.cartService.deleteCartByUser(user.id);
-    }
+    const orderResponse = await this.orderService.createOrder(iamUser, data);
     return orderResponse;
     // return plainToClass(OrderOutputDto, order);
   }
