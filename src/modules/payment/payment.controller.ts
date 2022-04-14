@@ -27,7 +27,7 @@ export class PaymentController {
       if (payment?.status === 'succeeded') {
         await this.orderService.createOrder(iamUser, {
           ...orderDetail,
-          status: IPaymentStatus.Success,
+          paymentStatus: IPaymentStatus.Success,
         });
       }
       return true;

@@ -6,6 +6,7 @@ import { Order, OrderSchema } from './schema/order.schema';
 import { AuthModule } from '../auth/auth.module';
 import { OrderLineModule } from '../order-line/order-line.module';
 import { CartModule } from '../cart/cart.module';
+import { ServicesModule } from '../services/services.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { CartModule } from '../cart/cart.module';
     AuthModule,
     OrderLineModule,
     CartModule,
+    ServicesModule,
   ],
   providers: [OrderService],
   controllers: [OrderController],

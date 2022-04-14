@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { IAddress } from 'src/modules/address/types/address.type';
 
 export type UserDocument = User & Document;
 
@@ -26,23 +27,17 @@ export class User {
   @Prop()
   dateOfBirth?: Date;
 
+  @Prop({ type: Object })
+  province?: IAddress;
+
+  @Prop({ type: Object })
+  district?: IAddress;
+
+  @Prop({ type: Object })
+  ward?: IAddress;
+
   @Prop()
-  gender?: string;
-
-  //   @Prop()
-  //   identityCard?: string;
-
-  //   @Prop()
-  //   identityImgFrontside?: string;
-
-  //   @Prop()
-  //   identityImgBackside?: string;
-
-  //   @Prop()
-  //   linkFacebook?: string;
-
-  //   @Prop({ default: true })
-  //   needUpdateProfile?: boolean;
+  privateHome?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

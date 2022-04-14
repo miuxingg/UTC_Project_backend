@@ -24,6 +24,9 @@ export class OrderInputDto {
   @IsString()
   status: string;
 
+  @IsString()
+  paymentStatus: string;
+
   @IsArray()
   orderLines: OrderLineInputFromOrderDto[];
 }

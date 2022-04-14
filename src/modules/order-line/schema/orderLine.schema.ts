@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Order } from 'src/modules/order/schema/order.schema';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Book } from 'src/modules/books/schema/book.schema';
+import { IOrderStatus } from 'src/utils/types';
 
 export type OrderLineDocument = OrderLine & Document;
 
@@ -34,6 +35,24 @@ export const populateBook = [
     },
   },
   { $unset: '$bookId' },
+];
+
+export const populateBookWithStatusSuccess = [
+  {
+    $lookup: {
+      from: 'orders',
+      foreignField: '_id',
+      localField: 'orderId',
+      as: 'orders',
+      pipeline: [
+        {
+          $match: { status: IOrderStatus.Success },
+        },
+      ],
+    },
+  },
+
+  { $unset: 'orders' },
 ];
 
 export const OrderLineSchema = SchemaFactory.createForClass(OrderLine);

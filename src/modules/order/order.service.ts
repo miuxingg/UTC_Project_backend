@@ -11,7 +11,8 @@ import { AuthService } from '../auth/auth.service';
 import { CartService } from '../cart/cart.service';
 import { OrderLineService } from '../order-line/order-line.service';
 import { OrderInputDto } from './dto/input.dto';
-import { IIAMUser } from 'src/utils/types';
+import { IIAMUser, IOrderStatus } from 'src/utils/types';
+import { MailerService } from '../services/mailer.service';
 
 @Injectable()
 export class OrderService extends ServiceBase<OrderDocument> {
@@ -20,6 +21,7 @@ export class OrderService extends ServiceBase<OrderDocument> {
     private readonly userService: AuthService,
     private readonly orderLineService: OrderLineService,
     private readonly cartService: CartService,
+    private readonly mailerService: MailerService,
   ) {
     super(orderModel);
   }
@@ -27,6 +29,7 @@ export class OrderService extends ServiceBase<OrderDocument> {
   async getAllOrderByUser(userId: string) {
     const order = await this.model.aggregate([
       { $match: { user: new Types.ObjectId(userId) } },
+      { $sort: { _id: -1 } },
       ...populateOrderLines,
     ]);
     return order;
@@ -47,9 +50,28 @@ export class OrderService extends ServiceBase<OrderDocument> {
     });
 
     const orderResponse = await Promise.all(orderLine);
+    let email = data.shippingMethod.email;
+    let name = `${data.shippingMethod.firstName} ${data.shippingMethod.lastName}`;
     if (user) {
       await this.cartService.deleteCartByUser(user.id);
+      email = user.email;
+      name = `${user.firstName} ${user.lastName}`;
     }
+    console.log(email, name);
+    // const line = orderResponse.map((item) => {
+    //   return { name: item.bookId };
+    // });
+    // if (email) {
+    //   this.mailerService.thanksTo(email, { name, orderLine: line });
+    // }
     return orderResponse;
+  }
+
+  async bestSaler() {
+    const [orderSuccess] = await this.model.aggregate([
+      { $match: { status: IOrderStatus.Success } },
+    ]);
+    console.log(orderSuccess);
+    return;
   }
 }

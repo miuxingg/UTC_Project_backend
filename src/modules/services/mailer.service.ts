@@ -29,4 +29,16 @@ export class MailerService {
       },
     });
   }
+
+  thanksTo(to, { name, orderLine }) {
+    this.mailer.sendMail({
+      to,
+      subject: 'Thank you',
+      template: 'thanks',
+      context: {
+        orderLine,
+        name,
+      },
+    });
+  }
 }

@@ -11,10 +11,15 @@ import { Model, Types } from 'mongoose';
 import { BookQuery, CreateBookDto } from './dto/input.dto';
 import { aggregateQuery } from 'src/common/Aggregate';
 import { filterByPrice } from 'src/utils/buildQueryBook';
+import { OrderLineService } from '../order-line/order-line.service';
+import { BaseQuery } from 'src/common/BaseDTO';
 
 @Injectable()
 export class BooksService extends ServiceBase<BookDocument> {
-  constructor(@InjectModel(Book.name) bookModel: Model<BookDocument>) {
+  constructor(
+    @InjectModel(Book.name) bookModel: Model<BookDocument>,
+    private readonly orderLineService: OrderLineService,
+  ) {
     super(bookModel);
   }
   async createBook(bookCreate: CreateBookDto) {
@@ -42,6 +47,7 @@ export class BooksService extends ServiceBase<BookDocument> {
 
     const data = await this.model.aggregate([
       { $match: match },
+      { $sort: { _id: -1 } },
       ...populateCategory(),
       ...aggregateQuery(queries),
     ]);
@@ -79,5 +85,30 @@ export class BooksService extends ServiceBase<BookDocument> {
       }
       return accumulator;
     }, []);
+  }
+
+  async getBookBestSaler() {
+    const statisticBook = await this.orderLineService.bookBestSaler();
+    const listIdBookStatistic = statisticBook
+      .map((item) => {
+        return new Types.ObjectId(item.bookId);
+      })
+      .slice(0, 10);
+    const listBookPromise = listIdBookStatistic.map(async (item) => {
+      return await this.model.findById(item);
+    });
+
+    const response = await Promise.all(listBookPromise);
+
+    // const response = await this.model.aggregate([
+    //   {
+    //     $match: {
+    //       _id: { $in: listIdBookStatistic },
+    //     },
+    //   },
+    //   ...aggregateQuery(queries),
+    // ]);
+
+    return { items: response, total: response.length };
   }
 }

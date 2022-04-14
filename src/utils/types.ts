@@ -1,3 +1,5 @@
+import { IAddress } from 'src/modules/address/types/address.type';
+
 export enum DocumentStatus {
   Approved = 'Approved',
   Pending = 'Pending',
@@ -27,15 +29,21 @@ export enum IPaymentMethod {
 export interface IShippingMethod {
   firstName?: string;
   lastName?: string;
-  provice?: string;
-  district?: string;
-  wards?: string;
+  provice?: IAddress;
+  district?: IAddress;
+  wards?: IAddress;
   privateHome?: string;
   phoneNumber?: string;
   email?: string;
 }
 
 export enum IPaymentStatus {
+  Pending = 'pending',
+  Success = 'success',
+  Rejected = 'rejected',
+}
+
+export enum IOrderStatus {
   Pending = 'pending',
   Success = 'success',
   Rejected = 'rejected',
