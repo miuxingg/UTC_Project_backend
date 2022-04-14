@@ -28,6 +28,8 @@ export class BookOutputDto extends ClassBase {
   @Expose() priceUnDiscount: number;
 
   @Expose() status: string;
+
+  @Expose() documentStatus: string;
 }
 
 @Exclude()

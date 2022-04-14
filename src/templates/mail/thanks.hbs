@@ -1,0 +1,20 @@
+<html>
+
+  <head>
+    <meta name='viewport' content='width=device-width' />
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <title>Thư cảm ơn</title>
+  </head>
+
+  <body>
+    <h2>Thư cảm ơn</h2>
+    <h4>Xin chào {{name}},</h4>
+    <p>Cảm ơn bạn đã mua sản phẩm tại cửa hàng.</p>
+    <p>Sản phẩm bao gồm: </p>
+    {{#each orderLine}}
+      <p>{{orderLine.name}}</p>
+    {{/each}}
+    <p>Chúc bạn hạnh phúc và thành công</p>
+  </body>
+
+</html>

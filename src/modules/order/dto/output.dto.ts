@@ -12,7 +12,7 @@ export class OrderOutputDto extends ClassBase {
   discount: number;
 
   @Expose()
-  paymentMethod: string;
+  paymentStatus: string;
 
   @Expose()
   status: string;

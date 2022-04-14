@@ -1,4 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
+import { ClassBase } from 'src/common/BaseDTO';
+import { IAddress } from 'src/modules/address/types/address.type';
 @Exclude()
 export class Authenticated {
   @Expose() access_token: string;
@@ -12,4 +14,18 @@ export class ResponseDto {
   @Expose() statusCode: number;
   @Expose() message: string;
   @Expose() field?: string;
+}
+
+@Exclude()
+export class ProfileDto extends ClassBase {
+  @Expose() firstName?: string;
+  @Expose() lastName?: string;
+  @Expose() email?: string;
+  @Expose() avatar?: string;
+  @Expose() phoneNumber?: string;
+  @Expose() dateOfBirth?: string;
+  @Expose() province?: IAddress;
+  @Expose() district?: IAddress;
+  @Expose() ward?: IAddress;
+  @Expose() privateHome?: string;
 }

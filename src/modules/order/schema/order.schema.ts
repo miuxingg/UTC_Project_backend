@@ -5,6 +5,7 @@ import {
   IPaymentMethod,
   IShippingMethod,
   IPaymentStatus,
+  IOrderStatus,
 } from 'src/utils/types';
 
 export type OrderDocument = Order & Document;
@@ -32,10 +33,17 @@ export class Order {
 
   @Prop({
     required: true,
+    default: IOrderStatus.Pending,
+    enum: Object.values(IOrderStatus),
+  })
+  status: string;
+
+  @Prop({
+    required: true,
     default: IPaymentStatus.Pending,
     enum: Object.values(IPaymentStatus),
   })
-  status: string;
+  paymentStatus: string;
 }
 
 export const populateOrderLines = [

@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
+import { BaseQuery, PaginationOutput } from 'src/common/BaseDTO';
 import { BooksService } from './books.service';
 import { BookByIds, BookQuery, CreateBookDto } from './dto/input.dto';
 import { BookOutputDto } from './dto/output.dto';
@@ -35,6 +36,15 @@ export class BooksController {
     return {
       items: plainToClass(BookOutputDto, response.items ?? []),
       total: response.total ?? 0,
+    };
+  }
+
+  @Get('/best-saler')
+  async getBookBestSaler(): Promise<PaginationOutput<BookOutputDto>> {
+    const data = await this.bookService.getBookBestSaler();
+    return {
+      items: plainToClass(BookOutputDto, data.items ?? []),
+      total: data.total ?? 0,
     };
   }
 

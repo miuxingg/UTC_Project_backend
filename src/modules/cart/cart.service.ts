@@ -33,6 +33,7 @@ export class CartService extends ServiceBase<CartDocument> {
   async getAllCart(userId: string, query: BaseQuery) {
     const response = await this.model.aggregate([
       { $match: { userId: new Types.ObjectId(userId) } },
+      { $sort: { _id: -1 } },
       ...populateBook(),
       ...aggregateQuery(query),
     ]);
