@@ -34,7 +34,5 @@ export class PaymentController {
     } catch (error) {
       return false;
     }
-
-    return false;
   }
 }

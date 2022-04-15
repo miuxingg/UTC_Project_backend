@@ -43,4 +43,11 @@ export class CartService extends ServiceBase<CartDocument> {
   async deleteCartByUser(userId: string) {
     return await this.model.deleteMany({ userId: new Types.ObjectId(userId) });
   }
+
+  async updateById(id: string, body: any) {
+    const doc = await this.model.findById(id);
+    doc.quantity = body.quantity;
+    await doc.save();
+    return doc;
+  }
 }

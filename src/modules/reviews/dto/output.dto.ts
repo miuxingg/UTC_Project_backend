@@ -13,4 +13,7 @@ export class ReviewOutputDto extends ClassBase {
 
   @Expose()
   rating: number;
+
+  @Expose()
+  createdAt: Date;
 }
