@@ -14,6 +14,7 @@ export class ReviewsService extends ServiceBase<ReviewDocument> {
   async getReviewsOnBook(bookId: string, queries?: BaseQuery): Promise<any> {
     return await this.model.aggregate([
       ...reviewOnBook(bookId),
+      { $sort: { _id: -1 } },
       ...aggregateQuery(queries),
     ]);
   }

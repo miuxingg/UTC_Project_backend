@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
@@ -49,6 +50,16 @@ export class CartController {
   ): Promise<any> {
     await this.cartService.deleteById(id);
     return { id };
+  }
+
+  @Put(':id')
+  async updateItem(
+    @User() iamUser: IIAMUser,
+    @Param('id') id: string,
+    @Body() body: any,
+  ): Promise<any> {
+    const data = await this.cartService.updateById(id, body);
+    return { data };
   }
 
   @Post()

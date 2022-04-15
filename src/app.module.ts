@@ -15,6 +15,7 @@ import { OrderModule } from './modules/order/order.module';
 import { OrderLineModule } from './modules/order-line/order-line.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { SocketModule } from './modules/socket/socket.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -31,6 +32,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
     OrderLineModule,
     PaymentModule,
     ReviewsModule,
+    SocketModule,
     // ServicesModule,
   ],
   controllers: [],
