@@ -66,12 +66,4 @@ export class OrderService extends ServiceBase<OrderDocument> {
     // }
     return orderResponse;
   }
-
-  async bestSaler() {
-    const [orderSuccess] = await this.model.aggregate([
-      { $match: { status: IOrderStatus.Success } },
-    ]);
-    console.log(orderSuccess);
-    return;
-  }
 }
