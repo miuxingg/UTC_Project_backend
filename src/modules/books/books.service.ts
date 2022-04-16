@@ -6,6 +6,7 @@ import {
   BookDocument,
   // bookPopulate,
   populateCategory,
+  populatePublisher,
 } from './schema/book.schema';
 import { Model, Types } from 'mongoose';
 import { BookQuery, CreateBookDto } from './dto/input.dto';
@@ -28,8 +29,14 @@ export class BooksService extends ServiceBase<BookDocument> {
 
   async getAllBook(queries?: BookQuery) {
     let match = {};
+    if (queries && queries.status) {
+      match['status'] = { $eq: queries.status };
+    }
     if (queries && queries?.category) {
       match['category'] = { $in: [new Types.ObjectId(queries.category)] };
+    }
+    if (queries && queries?.publisher) {
+      match['publishers'] = { $in: [new Types.ObjectId(queries.publisher)] };
     }
     if (queries && queries?.search) {
       match['$text'] = { $search: queries.search };
@@ -49,6 +56,7 @@ export class BooksService extends ServiceBase<BookDocument> {
       { $match: match },
       { $sort: { _id: -1 } },
       ...populateCategory(),
+      ...populatePublisher(),
       ...aggregateQuery(queries),
     ]);
 
@@ -59,6 +67,7 @@ export class BooksService extends ServiceBase<BookDocument> {
     return await this.model.aggregate([
       { $match: { _id: new Types.ObjectId(id) } },
       ...populateCategory(),
+      ...populatePublisher(),
     ]);
   }
 
@@ -67,6 +76,7 @@ export class BooksService extends ServiceBase<BookDocument> {
     return await this.model.aggregate([
       { $match: { _id: { $in: idsMapping } } },
       ...populateCategory(),
+      ...populatePublisher(),
       ...aggregateQuery(),
     ]);
   }

@@ -7,7 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { BaseQuery } from 'src/common/BaseDTO';
-import { BookStatus } from 'src/utils/types';
+import { BookStatus, DocumentStatus } from 'src/utils/types';
 
 export class CreateBookDto {
   @IsString()
@@ -42,12 +42,25 @@ export class CreateBookDto {
 
   @IsString()
   status: BookStatus;
+
+  @IsString()
+  documentStatus: DocumentStatus;
+
+  @IsString()
+  summary: string;
+
+  @IsMongoId()
+  publishers: string[];
 }
 
 export class BookQuery extends BaseQuery {
   @IsString()
   @IsOptional()
   category?: string;
+
+  @IsString()
+  @IsOptional()
+  publisher?: string;
 
   @IsNumber()
   @Type(() => Number)
@@ -62,6 +75,10 @@ export class BookQuery extends BaseQuery {
   @IsString()
   @IsOptional()
   cloudTag?: string;
+
+  @IsString()
+  @IsOptional()
+  status?: string;
 }
 
 export class BookByIds {
