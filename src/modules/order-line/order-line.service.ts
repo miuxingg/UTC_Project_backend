@@ -22,19 +22,21 @@ export class OrderLineService extends ServiceBase<OrderLineDocument> {
       ...populateBookWithStatusSuccess,
       ...aggregateQuery(),
     ]);
+    if (response) {
+      const statisticBookByOrder = response.items.reduce((pre, cur) => {
+        return !pre[String(cur.bookId)]
+          ? { ...pre, [String(cur.bookId)]: 1 }
+          : { ...pre, [String(cur.bookId)]: pre[String(cur.bookId)] + 1 };
+      }, {});
 
-    const statisticBookByOrder = response.items.reduce((pre, cur) => {
-      return !pre[String(cur.bookId)]
-        ? { ...pre, [String(cur.bookId)]: 1 }
-        : { ...pre, [String(cur.bookId)]: pre[String(cur.bookId)] + 1 };
-    }, {});
+      const bookByOrderArray = Object.keys(statisticBookByOrder)
+        .map((key) => {
+          return { bookId: key, statistic: statisticBookByOrder[key] };
+        })
+        .sort((x, y) => y.statistic - x.statistic);
 
-    const bookByOrderArray = Object.keys(statisticBookByOrder)
-      .map((key) => {
-        return { bookId: key, statistic: statisticBookByOrder[key] };
-      })
-      .sort((x, y) => y.statistic - x.statistic);
-
-    return bookByOrderArray;
+      return bookByOrderArray;
+    }
+    return [];
   }
 }

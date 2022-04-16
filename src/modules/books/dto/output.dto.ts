@@ -1,6 +1,7 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { ClassBase } from 'src/common/BaseDTO';
 import { CategoryOutput } from 'src/modules/category/dto/output.dto';
+import { PublisherOutputDto } from 'src/modules/publisher/dto/output.dto';
 
 @Exclude()
 export class BookOutputDto extends ClassBase {
@@ -30,6 +31,12 @@ export class BookOutputDto extends ClassBase {
   @Expose() status: string;
 
   @Expose() documentStatus: string;
+
+  @Expose() summary: string;
+
+  @Expose()
+  @Type(() => PublisherOutputDto)
+  publishers: string[];
 }
 
 @Exclude()

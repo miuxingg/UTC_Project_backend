@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Category } from 'src/modules/category/schema/category.schema';
+import { Publisher } from 'src/modules/publisher/schema/publisher.schema';
 import { BookStatus, DocumentStatus } from 'src/utils/types';
 
 export type BookDocument = Book & Document;
@@ -41,14 +42,25 @@ export class Book {
   @Prop({ required: true, default: [] })
   images: string[];
 
-  @Prop({ default: BookStatus.NONE, enum: Object.values(BookStatus) })
-  status: string;
+  @Prop({ default: BookStatus.NONE, enum: Object.values(BookStatus) }) // HOT, NEW, NONE
+  status?: string;
 
   @Prop({
     default: DocumentStatus.Pending,
-    enum: Object.values(DocumentStatus),
+    enum: Object.values(DocumentStatus), // Is the book displayed?
   })
   documentStatus: string;
+
+  @Prop({ default: '' })
+  summary?: string;
+
+  @Prop({
+    required: true,
+    default: [],
+    type: [MongooseSchema.Types.ObjectId],
+    ref: Publisher.name,
+  })
+  publishers: string[];
 }
 // export const bookPopulate = ['categories'];
 
@@ -60,6 +72,19 @@ export const populateCategory = () => {
         foreignField: '_id',
         localField: 'category',
         as: 'category',
+      },
+    },
+  ];
+};
+
+export const populatePublisher = () => {
+  return [
+    {
+      $lookup: {
+        from: 'publishers',
+        foreignField: '_id',
+        localField: 'publishers',
+        as: 'publishers',
       },
     },
   ];

@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { BaseQuery, PaginationOutput } from 'src/common/BaseDTO';
+import { PaginationOutput } from 'src/common/BaseDTO';
+import { BooksSeed } from 'src/seed/book';
 import { BooksService } from './books.service';
 import { BookByIds, BookQuery, CreateBookDto } from './dto/input.dto';
 import { BookOutputDto } from './dto/output.dto';
@@ -19,6 +20,15 @@ export class BooksController {
     return data;
   }
 
+  @Get('seed')
+  async bookSeedData() {
+    const dataPromise = BooksSeed.map(async (item) => {
+      return await this.bookService.create(item);
+    });
+    const data = await Promise.all(dataPromise);
+    return data;
+  }
+
   @Get('cloudtag')
   async getCloudTag() {
     const response = await this.bookService.getCloudTags();
@@ -34,7 +44,7 @@ export class BooksController {
       JSON.parse(String(query.ids)),
     );
     return {
-      items: plainToClass(BookOutputDto, response.items ?? []),
+      items: plainToClass(BookOutputDto, response?.items ?? []),
       total: response.total ?? 0,
     };
   }
@@ -43,8 +53,8 @@ export class BooksController {
   async getBookBestSaler(): Promise<PaginationOutput<BookOutputDto>> {
     const data = await this.bookService.getBookBestSaler();
     return {
-      items: plainToClass(BookOutputDto, data.items ?? []),
-      total: data.total ?? 0,
+      items: plainToClass(BookOutputDto, data?.items ?? []),
+      total: data?.total ?? 0,
     };
   }
 
