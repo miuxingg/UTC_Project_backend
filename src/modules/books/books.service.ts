@@ -4,16 +4,20 @@ import { ServiceBase } from 'src/common/ServiceBase';
 import {
   Book,
   BookDocument,
+  populateBook,
   // bookPopulate,
   populateCategory,
   populatePublisher,
 } from './schema/book.schema';
 import { Model, Types } from 'mongoose';
-import { BookQuery, CreateBookDto } from './dto/input.dto';
+import {
+  BookQuery,
+  CheckQuantityBooksInput,
+  CreateBookDto,
+} from './dto/input.dto';
 import { aggregateQuery } from 'src/common/Aggregate';
 import { filterByPrice } from 'src/utils/buildQueryBook';
 import { OrderLineService } from '../order-line/order-line.service';
-import { BaseQuery } from 'src/common/BaseDTO';
 
 @Injectable()
 export class BooksService extends ServiceBase<BookDocument> {
@@ -56,6 +60,7 @@ export class BooksService extends ServiceBase<BookDocument> {
       { $match: match },
       { $sort: { _id: -1 } },
       ...populateCategory(),
+      ...populateBook(),
       ...populatePublisher(),
       ...aggregateQuery(queries),
     ]);
@@ -67,6 +72,7 @@ export class BooksService extends ServiceBase<BookDocument> {
     return await this.model.aggregate([
       { $match: { _id: new Types.ObjectId(id) } },
       ...populateCategory(),
+      ...populateBook(),
       ...populatePublisher(),
     ]);
   }
@@ -77,6 +83,7 @@ export class BooksService extends ServiceBase<BookDocument> {
       { $match: { _id: { $in: idsMapping } } },
       ...populateCategory(),
       ...populatePublisher(),
+      ...populateBook(),
       ...aggregateQuery(),
     ]);
   }
@@ -109,16 +116,37 @@ export class BooksService extends ServiceBase<BookDocument> {
     });
 
     const response = await Promise.all(listBookPromise);
-
-    // const response = await this.model.aggregate([
-    //   {
-    //     $match: {
-    //       _id: { $in: listIdBookStatistic },
-    //     },
-    //   },
-    //   ...aggregateQuery(queries),
-    // ]);
-
     return { items: response, total: response.length };
+  }
+
+  async checkQuantityListBooks(listBooks: CheckQuantityBooksInput[]) {
+    const obj = {};
+    const ids = listBooks.map((book) => {
+      obj[book.bookId] = book.quantity;
+      return new Types.ObjectId(book.bookId);
+    });
+
+    const response = await this.model.aggregate([
+      {
+        $match: {
+          _id: { $in: ids },
+        },
+      },
+    ]);
+    const data = response.map((item) => {
+      return { ...item, isQuantity: item.quantity >= obj[item._id] };
+    });
+    return data;
+  }
+
+  async updateQuantity(bookId: string, quantity: number) {
+    const book = await this.model.findById(bookId);
+    if (book) {
+      book.quantity = book.quantity + quantity; //minus: - , add: +
+      await book.save();
+      return book;
+    } else {
+      return false;
+    }
   }
 }

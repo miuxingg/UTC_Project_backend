@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
 import {
+  IsArray,
+  IsBoolean,
   IsEnum,
   IsMongoId,
   IsNumber,
@@ -51,6 +53,12 @@ export class CreateBookDto {
 
   @IsMongoId()
   publishers: string[];
+
+  @IsBoolean()
+  isCombo: boolean;
+
+  @IsArray()
+  books: string[];
 }
 
 export class BookQuery extends BaseQuery {
@@ -84,4 +92,12 @@ export class BookQuery extends BaseQuery {
 export class BookByIds {
   @IsOptional()
   ids?: string[];
+}
+
+export class CheckQuantityBooksInput {
+  @IsMongoId()
+  bookId?: string;
+
+  @IsNumber()
+  quantity?: number;
 }

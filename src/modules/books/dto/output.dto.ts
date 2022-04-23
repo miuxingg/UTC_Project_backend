@@ -37,6 +37,13 @@ export class BookOutputDto extends ClassBase {
   @Expose()
   @Type(() => PublisherOutputDto)
   publishers: string[];
+
+  @Expose()
+  isCombo: boolean;
+
+  @Expose()
+  @Type(() => BookOutputInCombo)
+  books: string[];
 }
 
 @Exclude()
@@ -48,4 +55,20 @@ export class BookOutputInCart extends ClassBase {
   @Expose() priceUnDiscount: number;
 
   @Expose() price: number;
+}
+
+@Exclude()
+export class BookOutputInCombo extends ClassBase {
+  @Expose() name: string;
+
+  @Expose() thumbnail: string;
+
+  @Expose() author: string;
+}
+
+@Exclude()
+export class CheckBookQuantity extends ClassBase {
+  @Expose() isQuantity: boolean;
+
+  @Expose() name: string;
 }

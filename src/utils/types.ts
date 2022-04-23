@@ -29,12 +29,13 @@ export enum IPaymentMethod {
 export interface IShippingMethod {
   firstName?: string;
   lastName?: string;
-  provice?: IAddress;
+  province?: IAddress;
   district?: IAddress;
   wards?: IAddress;
   privateHome?: string;
   phoneNumber?: string;
   email?: string;
+  amount?: number;
 }
 
 export enum IPaymentStatus {
@@ -47,4 +48,5 @@ export enum IOrderStatus {
   Pending = 'pending',
   Success = 'success',
   Rejected = 'rejected',
+  Shipping = 'shipping',
 }

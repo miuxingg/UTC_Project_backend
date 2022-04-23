@@ -5,8 +5,9 @@ import {
   IsObject,
   IsString,
 } from 'class-validator';
+import { BaseQuery } from 'src/common/BaseDTO';
 import { OrderLineInputFromOrderDto } from 'src/modules/order-line/dto/input.dto';
-import { IShippingMethod } from 'src/utils/types';
+import { IOrderStatus, IShippingMethod } from 'src/utils/types';
 
 export class OrderInputDto {
   @IsNumber()
@@ -29,4 +30,9 @@ export class OrderInputDto {
 
   @IsArray()
   orderLines: OrderLineInputFromOrderDto[];
+}
+
+export class OrderHistoryQuery extends BaseQuery {
+  @IsString()
+  status: IOrderStatus;
 }

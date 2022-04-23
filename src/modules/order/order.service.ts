@@ -10,9 +10,11 @@ import { Model, Types } from 'mongoose';
 import { AuthService } from '../auth/auth.service';
 import { CartService } from '../cart/cart.service';
 import { OrderLineService } from '../order-line/order-line.service';
-import { OrderInputDto } from './dto/input.dto';
+import { OrderHistoryQuery, OrderInputDto } from './dto/input.dto';
 import { IIAMUser, IOrderStatus } from 'src/utils/types';
 import { MailerService } from '../services/mailer.service';
+import { BooksService } from '../books/books.service';
+import { aggregateQuery } from 'src/common/Aggregate';
 
 @Injectable()
 export class OrderService extends ServiceBase<OrderDocument> {
@@ -22,24 +24,27 @@ export class OrderService extends ServiceBase<OrderDocument> {
     private readonly orderLineService: OrderLineService,
     private readonly cartService: CartService,
     private readonly mailerService: MailerService,
+    private readonly booksService: BooksService,
   ) {
     super(orderModel);
   }
 
-  async getAllOrderByUser(userId: string) {
+  async getAllOrderByUser(userId: string, queries: OrderHistoryQuery) {
     const order = await this.model.aggregate([
-      { $match: { user: new Types.ObjectId(userId) } },
+      { $match: { user: new Types.ObjectId(userId), status: queries.status } },
       { $sort: { _id: -1 } },
       ...populateOrderLines,
+      ...aggregateQuery(),
     ]);
     return order;
   }
 
   async createOrder(iamUser: IIAMUser, data: OrderInputDto) {
     const user = await this.userService.findById(iamUser?.id);
+    const books = data.orderLines;
     const dataCreate = user?.id ? { ...data, user: user.id } : { ...data };
     const order = await this.model.create(dataCreate);
-    const books = data.orderLines;
+
     const orderLine = books.map(async (book) => {
       return await this.orderLineService.create({
         orderId: order.id,
