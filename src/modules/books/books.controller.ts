@@ -1,10 +1,16 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
+import { response } from 'express';
 import { PaginationOutput } from 'src/common/BaseDTO';
 import { BooksSeed } from 'src/seed/book';
 import { BooksService } from './books.service';
-import { BookByIds, BookQuery, CreateBookDto } from './dto/input.dto';
-import { BookOutputDto } from './dto/output.dto';
+import {
+  BookByIds,
+  BookQuery,
+  CheckQuantityBooksInput,
+  CreateBookDto,
+} from './dto/input.dto';
+import { BookOutputDto, CheckBookQuantity } from './dto/output.dto';
 
 @Controller('books')
 export class BooksController {
@@ -63,6 +69,13 @@ export class BooksController {
     const [response] = await this.bookService.getBookById(idBook);
     const data = plainToClass(BookOutputDto, response);
     return data;
+    // return response;
+  }
+
+  @Post('check-quantity')
+  async checkQuantity(@Body() res: CheckQuantityBooksInput[]) {
+    const response = await this.bookService.checkQuantityListBooks(res);
+    return plainToClass(CheckBookQuantity, response ?? []);
   }
 
   @Post()

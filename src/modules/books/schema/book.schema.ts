@@ -61,6 +61,17 @@ export class Book {
     ref: Publisher.name,
   })
   publishers: string[];
+
+  @Prop({ required: true, default: false })
+  isCombo: boolean;
+
+  @Prop({
+    required: true,
+    default: [],
+    type: [MongooseSchema.Types.ObjectId],
+    ref: Book.name,
+  })
+  books: string[];
 }
 // export const bookPopulate = ['categories'];
 
@@ -85,6 +96,20 @@ export const populatePublisher = () => {
         foreignField: '_id',
         localField: 'publishers',
         as: 'publishers',
+      },
+    },
+  ];
+};
+
+export const populateBook = () => {
+  return [
+    // { $unwind: '$books' },
+    {
+      $lookup: {
+        from: 'books',
+        localField: 'books',
+        foreignField: '_id',
+        as: 'books',
       },
     },
   ];

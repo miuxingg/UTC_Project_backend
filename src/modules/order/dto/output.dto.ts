@@ -25,5 +25,5 @@ export class OrderOutputDto extends ClassBase {
   orderLines: OrderLineOutputDto[];
 
   @Expose()
-  createAt: Date;
+  createdAt: Date;
 }

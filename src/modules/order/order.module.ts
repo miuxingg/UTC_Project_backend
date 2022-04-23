@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { OrderLineModule } from '../order-line/order-line.module';
 import { CartModule } from '../cart/cart.module';
 import { ServicesModule } from '../services/services.module';
+import { BooksModule } from '../books/books.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ServicesModule } from '../services/services.module';
     OrderLineModule,
     CartModule,
     ServicesModule,
+    BooksModule,
   ],
   providers: [OrderService],
   controllers: [OrderController],
