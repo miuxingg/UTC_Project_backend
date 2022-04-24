@@ -147,5 +147,40 @@ export const populateFavorite = (userId?: string) => {
   ];
 };
 
+export const populateRating = () => {
+  return [
+    {
+      $lookup: {
+        from: 'reviews',
+        localField: '_id',
+        foreignField: 'bookId',
+        as: 'reviews',
+      },
+    },
+    {
+      $set: {
+        rating: {
+          $round: [
+            {
+              $divide: [
+                { $sum: '$reviews.rating' },
+                {
+                  $cond: [
+                    { $eq: [{ $size: '$reviews' }, 0] },
+                    1,
+                    { $size: '$reviews' },
+                  ],
+                },
+              ],
+            },
+            0,
+          ],
+        },
+      },
+    },
+    { $unset: ['reviews'] },
+  ];
+};
+
 export const BookSchema = SchemaFactory.createForClass(Book);
 BookSchema.index({ name: 'text', author: 'text' });

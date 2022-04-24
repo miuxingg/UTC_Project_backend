@@ -9,6 +9,7 @@ import {
   populateCategory,
   populateFavorite,
   populatePublisher,
+  populateRating,
 } from './schema/book.schema';
 import { Model, Types } from 'mongoose';
 import {
@@ -64,6 +65,7 @@ export class BooksService extends ServiceBase<BookDocument> {
       ...populateBook(),
       ...populatePublisher(),
       ...populateFavorite(userId),
+      ...populateRating(),
       ...aggregateQuery(queries),
     ]);
 
@@ -77,6 +79,7 @@ export class BooksService extends ServiceBase<BookDocument> {
       ...populateBook(),
       ...populatePublisher(),
       ...populateFavorite(userId),
+      ...populateRating(),
     ]);
   }
 
@@ -88,6 +91,7 @@ export class BooksService extends ServiceBase<BookDocument> {
       ...populatePublisher(),
       ...populateBook(),
       ...populateFavorite(userId),
+      ...populateRating(),
       ...aggregateQuery(),
     ]);
   }
