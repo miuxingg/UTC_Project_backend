@@ -47,6 +47,9 @@ export class BookOutputDto extends ClassBase {
 
   @Expose()
   isFavorite: boolean;
+
+  @Expose()
+  rating: number;
 }
 
 @Exclude()
