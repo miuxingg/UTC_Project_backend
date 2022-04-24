@@ -2,7 +2,10 @@ import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { response } from 'express';
 import { PaginationOutput } from 'src/common/BaseDTO';
+import { User } from 'src/libs/decorators/user.decorator';
 import { BooksSeed } from 'src/seed/book';
+import { IIAMUser } from 'src/utils/types';
+import { AuthService } from '../auth/auth.service';
 import { BooksService } from './books.service';
 import {
   BookByIds,
@@ -14,16 +17,21 @@ import { BookOutputDto, CheckBookQuantity } from './dto/output.dto';
 
 @Controller('books')
 export class BooksController {
-  constructor(private readonly bookService: BooksService) {}
+  constructor(
+    private readonly bookService: BooksService,
+    private readonly userService: AuthService,
+  ) {}
 
   @Get()
-  async getBooks(@Query() queries?: BookQuery) {
-    const [response] = await this.bookService.getAllBook(queries);
+  async getBooks(@User() iamUser: IIAMUser, @Query() queries?: BookQuery) {
+    const user = await this.userService.findById(iamUser?.id);
+    const [response] = await this.bookService.getAllBook(queries, user?.id);
     const data = {
       items: plainToClass(BookOutputDto, response?.items ?? []),
       total: response?.total ?? 0,
     };
     return data;
+    // return response;
   }
 
   @Get('seed')
@@ -45,9 +53,11 @@ export class BooksController {
   }
 
   @Get('ids')
-  async getBookByIds(@Query() query: BookByIds) {
+  async getBookByIds(@User() iamUser: IIAMUser, @Query() query: BookByIds) {
+    const user = await this.userService.findById(iamUser?.id);
     const [response] = await this.bookService.getBookByIds(
       JSON.parse(String(query.ids)),
+      user?.id,
     );
     return {
       items: plainToClass(BookOutputDto, response?.items ?? []),
@@ -65,8 +75,10 @@ export class BooksController {
   }
 
   @Get(':id')
-  async getBookById(@Param('id') idBook: string) {
-    const [response] = await this.bookService.getBookById(idBook);
+  async getBookById(@User() iamUser: IIAMUser, @Param('id') idBook: string) {
+    const user = await this.userService.findById(iamUser?.id);
+
+    const [response] = await this.bookService.getBookById(idBook, user?.id);
     const data = plainToClass(BookOutputDto, response);
     return data;
     // return response;

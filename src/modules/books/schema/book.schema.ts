@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 import { Category } from 'src/modules/category/schema/category.schema';
 import { Publisher } from 'src/modules/publisher/schema/publisher.schema';
 import { BookStatus, DocumentStatus } from 'src/utils/types';
@@ -112,6 +112,38 @@ export const populateBook = () => {
         as: 'books',
       },
     },
+  ];
+};
+
+export const populateFavorite = (userId?: string) => {
+  if (!userId)
+    return [
+      {
+        $set: {
+          isFavorite: false,
+        },
+      },
+    ];
+  return [
+    {
+      $lookup: {
+        from: 'favorites',
+        localField: '_id',
+        foreignField: 'book',
+        as: 'favorite',
+        pipeline: [
+          {
+            $match: { user: new Types.ObjectId(userId) },
+          },
+        ],
+      },
+    },
+    {
+      $set: {
+        isFavorite: { $toBool: { $size: '$favorite' } },
+      },
+    },
+    { $unset: ['favorite'] },
   ];
 };
 
