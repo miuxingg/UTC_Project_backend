@@ -17,6 +17,7 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { SocketModule } from './modules/socket/socket.module';
 import { PublisherModule } from './modules/publisher/publisher.module';
+import { FavoriteModule } from './modules/favorite/favorite.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -35,6 +36,7 @@ import { PublisherModule } from './modules/publisher/publisher.module';
     ReviewsModule,
     SocketModule,
     PublisherModule,
+    FavoriteModule,
     // ServicesModule,
   ],
   controllers: [],

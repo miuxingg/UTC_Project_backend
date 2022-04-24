@@ -44,6 +44,9 @@ export class BookOutputDto extends ClassBase {
   @Expose()
   @Type(() => BookOutputInCombo)
   books: string[];
+
+  @Expose()
+  isFavorite: boolean;
 }
 
 @Exclude()

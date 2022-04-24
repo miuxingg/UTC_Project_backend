@@ -7,6 +7,7 @@ import {
   populateBook,
   // bookPopulate,
   populateCategory,
+  populateFavorite,
   populatePublisher,
 } from './schema/book.schema';
 import { Model, Types } from 'mongoose';
@@ -31,7 +32,7 @@ export class BooksService extends ServiceBase<BookDocument> {
     return await this.create({ ...bookCreate });
   }
 
-  async getAllBook(queries?: BookQuery) {
+  async getAllBook(queries?: BookQuery, userId?: string) {
     let match = {};
     if (queries && queries.status) {
       match['status'] = { $eq: queries.status };
@@ -62,28 +63,31 @@ export class BooksService extends ServiceBase<BookDocument> {
       ...populateCategory(),
       ...populateBook(),
       ...populatePublisher(),
+      ...populateFavorite(userId),
       ...aggregateQuery(queries),
     ]);
 
     return data;
   }
 
-  async getBookById(id: string) {
+  async getBookById(id: string, userId?: string) {
     return await this.model.aggregate([
       { $match: { _id: new Types.ObjectId(id) } },
       ...populateCategory(),
       ...populateBook(),
       ...populatePublisher(),
+      ...populateFavorite(userId),
     ]);
   }
 
-  async getBookByIds(ids: string[]) {
+  async getBookByIds(ids: string[], userId?: string) {
     const idsMapping = ids.map((id) => new Types.ObjectId(id));
     return await this.model.aggregate([
       { $match: { _id: { $in: idsMapping } } },
       ...populateCategory(),
       ...populatePublisher(),
       ...populateBook(),
+      ...populateFavorite(userId),
       ...aggregateQuery(),
     ]);
   }
