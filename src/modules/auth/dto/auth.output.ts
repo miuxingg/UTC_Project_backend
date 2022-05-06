@@ -28,4 +28,5 @@ export class ProfileDto extends ClassBase {
   @Expose() district?: IAddress;
   @Expose() ward?: IAddress;
   @Expose() privateHome?: string;
+  @Expose() roles?: string;
 }

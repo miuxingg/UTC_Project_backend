@@ -10,6 +10,7 @@ import { User, UserDocument } from './schema/auth.schema';
 import * as messages from '../resources/errorMessage.json';
 import { generateToken } from 'src/utils/generateToken';
 import { EXPRIRE_TOKEN } from 'src/configs';
+import { DashboardRolesAccess } from 'src/configs/roles.config';
 @Injectable()
 export class AuthService extends ServiceBase<UserDocument> {
   constructor(
@@ -41,7 +42,7 @@ export class AuthService extends ServiceBase<UserDocument> {
     });
   }
 
-  async login(loginDto: CredentialDto) {
+  async login(loginDto: CredentialDto, isAdmin: boolean) {
     const _isCheckEmailExist = await this.userModel.findOne({
       email: loginDto.email,
     });
@@ -62,9 +63,22 @@ export class AuthService extends ServiceBase<UserDocument> {
           'Password',
         ]),
       );
+    if (isAdmin) {
+      const _check = DashboardRolesAccess.includes(
+        _isCheckEmailExist.roles as any,
+      );
+      if (!_check) {
+        throw new BadRequestException(
+          transformValidationMessage(messages.permission, 'permission'),
+        );
+      }
+    }
 
     return {
-      access_token: generateToken(_isCheckEmailExist._id),
+      access_token: generateToken(
+        _isCheckEmailExist._id,
+        _isCheckEmailExist.roles,
+      ),
       expires_in: EXPRIRE_TOKEN,
     };
   }

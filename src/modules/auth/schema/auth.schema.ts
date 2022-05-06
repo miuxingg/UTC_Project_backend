@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { IAddress } from 'src/modules/address/types/address.type';
-
+import { Roles } from '../../../configs/roles.config';
 export type UserDocument = User & Document;
 
 @Schema({ timestamps: true })
@@ -38,6 +38,12 @@ export class User {
 
   @Prop()
   privateHome?: string;
+
+  @Prop({
+    enum: Object.values(Roles),
+    default: Roles.Guest,
+  })
+  roles?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

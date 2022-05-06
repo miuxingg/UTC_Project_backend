@@ -17,5 +17,6 @@
   "incorrectPassword": "incorrect.password",
   "incorrectEmail": "incorrect.email",
   "passwordMinLength": "password.minLength",
-  "isNotUser": "user.isNotUser"
+  "isNotUser": "user.isNotUser",
+  "permission": "PERMISSION: you not permission"
 }

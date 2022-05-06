@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ServiceBase } from 'src/common/ServiceBase';
 import { Category, CategoryDocument } from './schema/category.schema';
 import { Model } from 'mongoose';
 import { CreateCategoryDto } from './dto/input.dto';
+import { BaseQuery } from 'src/common/BaseDTO';
+import { aggregateQuery } from 'src/common/Aggregate';
 
 @Injectable()
 export class CategoryService extends ServiceBase<CategoryDocument> {
@@ -11,6 +13,10 @@ export class CategoryService extends ServiceBase<CategoryDocument> {
     @InjectModel(Category.name) categoryModel: Model<CategoryDocument>,
   ) {
     super(categoryModel);
+  }
+
+  async getAllCategories(queries?: BaseQuery) {
+    return await this.model.aggregate([...aggregateQuery(queries)]);
   }
 
   async createCategory(category: CreateCategoryDto) {
@@ -26,5 +32,15 @@ export class CategoryService extends ServiceBase<CategoryDocument> {
       return data;
     }
     return [];
+  }
+
+  async updateCategory(id: string, input: CreateCategoryDto) {
+    const category = await this.model.findById(id);
+    if (!category) {
+      throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    category.name = input.name;
+    await category.save();
+    return category;
   }
 }

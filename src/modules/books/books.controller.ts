@@ -92,7 +92,9 @@ export class BooksController {
 
   @Post()
   async createBook(@Body() createBook: CreateBookDto) {
-    const response = await this.bookService.createBook(createBook);
+    console.log(createBook);
+
+    const response = await this.bookService.createBook({ ...createBook });
     const data = plainToClass(BookOutputDto, response);
     return data;
   }

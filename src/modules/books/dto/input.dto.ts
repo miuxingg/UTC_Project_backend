@@ -15,7 +15,7 @@ export class CreateBookDto {
   @IsString()
   name: string;
 
-  @IsMongoId()
+  @IsArray()
   category: string[];
 
   @IsString()
@@ -27,7 +27,7 @@ export class CreateBookDto {
   @IsString()
   thumbnail: string;
 
-  @IsString()
+  @IsArray()
   cloudTag: string[];
 
   @IsNumber()
@@ -36,7 +36,7 @@ export class CreateBookDto {
   @IsNumber()
   priceUnDiscount: number;
 
-  @IsString()
+  @IsArray()
   images: string[];
 
   @IsNumber()
@@ -46,12 +46,13 @@ export class CreateBookDto {
   status: BookStatus;
 
   @IsString()
+  @IsOptional()
   documentStatus: DocumentStatus;
 
   @IsString()
   summary: string;
 
-  @IsMongoId()
+  @IsArray()
   publishers: string[];
 
   @IsBoolean()

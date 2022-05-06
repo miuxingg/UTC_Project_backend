@@ -19,9 +19,11 @@ export class CredentialDto {
   password: string;
 
   @IsString()
+  @IsOptional()
   firstName?: string;
 
   @IsString()
+  @IsOptional()
   lastName?: string;
 }
 

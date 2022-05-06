@@ -1,5 +1,17 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
+import { BaseQuery } from 'src/common/BaseDTO';
+import { ManagementGuard } from 'src/libs/Guard/management.guard';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto, GetCategoryByIdsDto } from './dto/input.dto';
 import { CategoryOutput } from './dto/output.dto';
@@ -9,13 +21,19 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get()
-  async getAllCategory() {
-    const response = await this.categoryService.findAll();
+  async getAllCategory(@Query() queries?: BaseQuery) {
+    const [response] = await this.categoryService.getAllCategories(queries);
     return {
       items: plainToClass(CategoryOutput, response.items ?? []),
       total: response.total ?? 0,
     };
     // return await this.categoryService.getAllCategory();
+  }
+
+  @Get(':id')
+  async getCategoryById(@Param('id') id: string) {
+    const response = await this.categoryService.findById(id);
+    return plainToClass(CategoryOutput, response);
   }
 
   @Post('/categoryByIds')
@@ -25,7 +43,26 @@ export class CategoryController {
   }
 
   @Post()
+  @UseGuards(ManagementGuard)
   async createCategory(@Body() category: CreateCategoryDto) {
-    return await this.categoryService.createCategory(category);
+    const data = await this.categoryService.createCategory(category);
+    return plainToClass(CategoryOutput, data);
+  }
+
+  @Put(':id')
+  @UseGuards(ManagementGuard)
+  async updateCategory(
+    @Param('id') id: string,
+    @Body() input: CreateCategoryDto,
+  ) {
+    const data = await this.categoryService.updateCategory(id, input);
+    return plainToClass(CategoryOutput, data);
+  }
+
+  @Delete(':id')
+  @UseGuards(ManagementGuard)
+  async deleteCategory(@Param('id') id: string) {
+    const data = await this.categoryService.deleteById(id);
+    return plainToClass(CategoryOutput, data);
   }
 }

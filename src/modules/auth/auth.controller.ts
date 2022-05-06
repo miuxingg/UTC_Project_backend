@@ -101,9 +101,16 @@ export class AuthController {
     await this.authService.verifyEmail(JSON.parse(payload).email, 'Unknown');
     return { statusCode: 200, message: 'Success' };
   }
+
   @Post('login')
   async loginController(@Body() loginDto: LoginDto) {
-    const authenticated = await this.authService.login(loginDto);
+    const authenticated = await this.authService.login(loginDto, false);
+    return plainToClass(Authenticated, authenticated);
+  }
+
+  @Post('login-admin')
+  async loginAdminController(@Body() loginDto: LoginDto) {
+    const authenticated = await this.authService.login(loginDto, true);
     return plainToClass(Authenticated, authenticated);
   }
 }
