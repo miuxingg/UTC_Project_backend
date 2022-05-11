@@ -2,7 +2,6 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
-  IsEnum,
   IsMongoId,
   IsNumber,
   IsOptional,
@@ -43,7 +42,7 @@ export class CreateBookDto {
   quantity: number;
 
   @IsString()
-  status: BookStatus;
+  status: string;
 
   @IsString()
   @IsOptional()
@@ -101,4 +100,9 @@ export class CheckQuantityBooksInput {
 
   @IsNumber()
   quantity?: number;
+}
+
+export class UpdateDocumentStatusInput {
+  @IsOptional()
+  documentStatus: DocumentStatus;
 }

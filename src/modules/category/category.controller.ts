@@ -59,10 +59,13 @@ export class CategoryController {
     return plainToClass(CategoryOutput, data);
   }
 
-  @Delete(':id')
+  @Put('/status/:id')
   @UseGuards(ManagementGuard)
-  async deleteCategory(@Param('id') id: string) {
-    const data = await this.categoryService.deleteById(id);
+  async deleteCategory(
+    @Param('id') id: string,
+    @Body() input: CreateCategoryDto,
+  ) {
+    const data = await this.categoryService.updateStatusPublisher(id, input);
     return plainToClass(CategoryOutput, data);
   }
 }

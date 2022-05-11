@@ -19,8 +19,6 @@ export class SocketsGateway implements OnGatewayInit {
     { __to, ...data }: T,
   ) {
     if (__to) {
-      console.log(String(__to));
-
       this.server.to(__to).emit(eventName, data);
     } else {
       this.server.emit(eventName, data);

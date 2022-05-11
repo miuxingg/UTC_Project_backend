@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ServiceBase } from 'src/common/ServiceBase';
 import {
@@ -36,6 +36,26 @@ export class OrderService extends ServiceBase<OrderDocument> {
       ...populateOrderLines,
       ...aggregateQuery(),
     ]);
+    return order;
+  }
+
+  async getAllOrderByAdmin(queries: OrderHistoryQuery) {
+    const order = await this.model.aggregate([
+      { $match: { status: queries.status } },
+      { $sort: { _id: -1 } },
+      ...populateOrderLines,
+      ...aggregateQuery(),
+    ]);
+    return order;
+  }
+
+  async updateStatusOrder(id: string, input: OrderHistoryQuery) {
+    const order = await this.model.findById(id);
+    if (!order) {
+      throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    order.status = input.status;
+    await order.save();
     return order;
   }
 

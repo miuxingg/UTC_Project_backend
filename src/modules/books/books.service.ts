@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ServiceBase } from 'src/common/ServiceBase';
 import {
@@ -16,10 +16,12 @@ import {
   BookQuery,
   CheckQuantityBooksInput,
   CreateBookDto,
+  UpdateDocumentStatusInput,
 } from './dto/input.dto';
 import { aggregateQuery } from 'src/common/Aggregate';
 import { filterByPrice } from 'src/utils/buildQueryBook';
 import { OrderLineService } from '../order-line/order-line.service';
+import { BaseQuery } from 'src/common/BaseDTO';
 
 @Injectable()
 export class BooksService extends ServiceBase<BookDocument> {
@@ -127,6 +129,18 @@ export class BooksService extends ServiceBase<BookDocument> {
     return { items: response, total: response.length };
   }
 
+  async getBookByCombos(userId?: string, queries?: BaseQuery) {
+    return await this.model.aggregate([
+      { $match: { isCombo: true } },
+      ...populateCategory(),
+      ...populateBook(),
+      ...populatePublisher(),
+      ...populateFavorite(userId),
+      ...populateRating(),
+      ...aggregateQuery(queries),
+    ]);
+  }
+
   async checkQuantityListBooks(listBooks: CheckQuantityBooksInput[]) {
     const obj = {};
     const ids = listBooks.map((book) => {
@@ -156,5 +170,38 @@ export class BooksService extends ServiceBase<BookDocument> {
     } else {
       return false;
     }
+  }
+
+  async updateBook(bookId: string, data: CreateBookDto) {
+    const bookDocument = await this.model.findById(bookId);
+    if (!bookDocument) {
+      throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    bookDocument.name = data.name;
+    bookDocument.category = data.category;
+    bookDocument.author = data.author;
+    bookDocument.description = data.description;
+    bookDocument.price = data.price;
+    bookDocument.priceUnDiscount = data.priceUnDiscount;
+    bookDocument.quantity = data.quantity;
+    bookDocument.cloudTag = data.cloudTag;
+    bookDocument.thumbnail = data.thumbnail;
+    bookDocument.images = data.images;
+    bookDocument.status = data.status;
+    bookDocument.summary = data.summary;
+    bookDocument.publishers = data.publishers;
+    bookDocument.isCombo = data.isCombo;
+    bookDocument.books = data.books;
+    await bookDocument.save();
+    return bookDocument;
+  }
+  async updateDocumentStatus(bookId: string, data: UpdateDocumentStatusInput) {
+    const bookDocument = await this.model.findById(bookId);
+    if (!bookDocument) {
+      throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    bookDocument.documentStatus = data.documentStatus;
+    await bookDocument.save();
+    return bookDocument;
   }
 }
