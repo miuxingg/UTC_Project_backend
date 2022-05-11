@@ -1,8 +1,18 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { response } from 'express';
-import { PaginationOutput } from 'src/common/BaseDTO';
+import { BaseQuery, PaginationOutput } from 'src/common/BaseDTO';
 import { User } from 'src/libs/decorators/user.decorator';
+import { ManagementGuard } from 'src/libs/Guard/management.guard';
 import { BooksSeed } from 'src/seed/book';
 import { IIAMUser } from 'src/utils/types';
 import { AuthService } from '../auth/auth.service';
@@ -12,6 +22,7 @@ import {
   BookQuery,
   CheckQuantityBooksInput,
   CreateBookDto,
+  UpdateDocumentStatusInput,
 } from './dto/input.dto';
 import { BookOutputDto, CheckBookQuantity } from './dto/output.dto';
 
@@ -74,6 +85,19 @@ export class BooksController {
     };
   }
 
+  @Get('/combos')
+  async getBookByCombo(@User() iamUser: IIAMUser, @Query() queries: BaseQuery) {
+    const user = await this.userService.findById(iamUser?.id);
+    const [response] = await this.bookService.getBookByCombos(
+      user?.id,
+      queries,
+    );
+    return {
+      items: plainToClass(BookOutputDto, response?.items ?? []),
+      total: response?.total ?? 0,
+    };
+  }
+
   @Get(':id')
   async getBookById(@User() iamUser: IIAMUser, @Param('id') idBook: string) {
     const user = await this.userService.findById(iamUser?.id);
@@ -84,6 +108,26 @@ export class BooksController {
     // return response;
   }
 
+  @Put('/document-status/:id')
+  @UseGuards(ManagementGuard)
+  async updateDocumentStatus(
+    @Param('id') id: string,
+    @Body() documentStatus: UpdateDocumentStatusInput,
+  ) {
+    const response = await this.bookService.updateDocumentStatus(
+      id,
+      documentStatus,
+    );
+    return plainToClass(BookOutputDto, response);
+  }
+
+  @Put(':id')
+  @UseGuards(ManagementGuard)
+  async updateBook(@Param('id') id: string, @Body() createBook: CreateBookDto) {
+    const data = await this.bookService.updateBook(id, createBook);
+    return plainToClass(BookOutputDto, data);
+  }
+
   @Post('check-quantity')
   async checkQuantity(@Body() res: CheckQuantityBooksInput[]) {
     const response = await this.bookService.checkQuantityListBooks(res);
@@ -91,9 +135,8 @@ export class BooksController {
   }
 
   @Post()
+  @UseGuards(ManagementGuard)
   async createBook(@Body() createBook: CreateBookDto) {
-    console.log(createBook);
-
     const response = await this.bookService.createBook({ ...createBook });
     const data = plainToClass(BookOutputDto, response);
     return data;

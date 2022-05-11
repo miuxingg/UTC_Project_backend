@@ -1,10 +1,22 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { User } from 'src/libs/decorators/user.decorator';
+import { ManagementGuard } from 'src/libs/Guard/management.guard';
 import { IIAMUser } from 'src/utils/types';
 import { AuthService } from '../auth/auth.service';
 import { CartService } from '../cart/cart.service';
 import { OrderLineService } from '../order-line/order-line.service';
+import { SocketsGateway } from '../socket/socket.gateway';
+import { EventNames } from '../socket/types/eventName';
 import { OrderHistoryQuery, OrderInputDto } from './dto/input.dto';
 import { OrderOutputDto } from './dto/output.dto';
 import { OrderService } from './order.service';
@@ -14,8 +26,7 @@ export class OrderController {
   constructor(
     private readonly orderService: OrderService,
     private readonly userService: AuthService,
-    private readonly orderLineService: OrderLineService,
-    private readonly cartService: CartService,
+    private readonly socketsGateway: SocketsGateway,
   ) {}
 
   @Get()
@@ -36,10 +47,38 @@ export class OrderController {
     };
   }
 
+  @Get('/admin-order')
+  @UseGuards(ManagementGuard)
+  async getOrderLineByAdmin(@Query() queries: OrderHistoryQuery) {
+    const [response] = await this.orderService.getAllOrderByAdmin(queries);
+    // return response;
+    return {
+      items: plainToClass(OrderOutputDto, response?.items ?? []),
+      total: response?.total ?? 0,
+    };
+  }
+
+  @Put(':id')
+  @UseGuards(ManagementGuard)
+  async updateStatusOrder(
+    @Param('id') id: string,
+    @Body() input: OrderHistoryQuery,
+  ) {
+    const response = await this.orderService.updateStatusOrder(id, input);
+    if (response?.user) {
+      const user = await this.userService.findById(response?.user);
+      this.socketsGateway.sendEvent(EventNames.UpdateOrderStatus, {
+        __to: user?.id,
+        id: response?._id,
+        status: response?.status,
+      });
+    }
+
+    return plainToClass(OrderOutputDto, response);
+  }
+
   @Post()
   async createOrder(@User() iamUser: IIAMUser, @Body() data: OrderInputDto) {
-    console.log(data);
-
     const orderResponse = await this.orderService.createOrder(iamUser, data);
     return orderResponse;
     // return plainToClass(OrderOutputDto, order);

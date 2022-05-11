@@ -42,7 +42,7 @@ export class Book {
   @Prop({ required: true, default: [] })
   images: string[];
 
-  @Prop({ default: BookStatus.NONE, enum: Object.values(BookStatus) }) // HOT, NEW, NONE
+  @Prop({ default: BookStatus.NONE }) // HOT, NEW, NONE
   status?: string;
 
   @Prop({

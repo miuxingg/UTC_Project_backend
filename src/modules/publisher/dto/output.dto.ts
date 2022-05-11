@@ -5,4 +5,7 @@ import { ClassBase } from 'src/common/BaseDTO';
 export class PublisherOutputDto extends ClassBase {
   @Expose()
   name: string;
+
+  @Expose()
+  status: string;
 }

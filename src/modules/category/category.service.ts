@@ -16,7 +16,15 @@ export class CategoryService extends ServiceBase<CategoryDocument> {
   }
 
   async getAllCategories(queries?: BaseQuery) {
-    return await this.model.aggregate([...aggregateQuery(queries)]);
+    const match = {};
+    if (queries && queries?.search) {
+      match['$text'] = { $search: queries.search };
+    }
+    return await this.model.aggregate([
+      { $match: match },
+      { $sort: { _id: -1 } },
+      ...aggregateQuery(queries),
+    ]);
   }
 
   async createCategory(category: CreateCategoryDto) {
@@ -42,5 +50,15 @@ export class CategoryService extends ServiceBase<CategoryDocument> {
     category.name = input.name;
     await category.save();
     return category;
+  }
+
+  async updateStatusPublisher(id: string, input: CreateCategoryDto) {
+    const publisher = await this.model.findById(id);
+    if (!publisher) {
+      throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
+    }
+    publisher.status = input.status;
+    await publisher.save();
+    return publisher;
   }
 }
