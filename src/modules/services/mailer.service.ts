@@ -41,4 +41,16 @@ export class MailerService {
       },
     });
   }
+
+  employeePassword(to, { password, email }) {
+    this.mailer.sendMail({
+      to,
+      subject: 'Your password',
+      template: 'employeePassword',
+      context: {
+        password,
+        email,
+      },
+    });
+  }
 }

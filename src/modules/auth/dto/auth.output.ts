@@ -30,3 +30,11 @@ export class ProfileDto extends ClassBase {
   @Expose() privateHome?: string;
   @Expose() roles?: string;
 }
+
+@Exclude()
+export class EmployeOutputDto extends ClassBase {
+  @Expose() email?: string;
+  @Expose() roles?: string;
+  @Expose() firstName?: string;
+  @Expose() lastName?: string;
+}
