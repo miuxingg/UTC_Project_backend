@@ -2,23 +2,35 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Put,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
+import { BaseQuery } from 'src/common/BaseDTO';
 import { Public } from 'src/libs/decorators/public.decorator';
 import { User } from 'src/libs/decorators/user.decorator';
+import { SystemGuard } from 'src/libs/Guard/system.guard';
 import { decodeBase64, encodeBase64 } from 'src/utils';
 import { IIAMUser } from 'src/utils/types';
 import { CacheService } from '../services/cache.service';
 import { AuthService } from './auth.service';
 import {
+  AccountEmployeelDto,
   CredentialDto,
   LoginDto,
   UpdateProfileInputDto,
 } from './dto/auth.input';
-import { Authenticated, ProfileDto, ResponseDto } from './dto/auth.output';
+import {
+  Authenticated,
+  EmployeOutputDto,
+  ProfileDto,
+  ResponseDto,
+} from './dto/auth.output';
 
 @Controller('auth')
 @Public()
@@ -35,6 +47,23 @@ export class AuthController {
       return plainToClass(ProfileDto, user);
     }
     return null;
+  }
+
+  @Get('employee')
+  @UseGuards(SystemGuard)
+  async getEmployee(@Query() queries: BaseQuery) {
+    const [employee] = await this.authService.getEmployee(queries);
+    return {
+      items: plainToClass(EmployeOutputDto, employee?.items ?? []),
+      total: employee?.total ?? 0,
+    };
+  }
+
+  @Get('employee/:id')
+  @UseGuards(SystemGuard)
+  async getEmployeeById(@Param('id') idEmp: string) {
+    const employee = await this.authService.findById(idEmp);
+    return plainToClass(EmployeOutputDto, employee);
   }
 
   @Put()
@@ -64,6 +93,23 @@ export class AuthController {
     user.privateHome = privateHome;
     const newUser = await user.save();
     return plainToClass(ProfileDto, newUser);
+  }
+
+  @Put('employee/:id')
+  @UseGuards(SystemGuard)
+  async updateEmployee(
+    @Param('id') idEmp: string,
+    @Body() input: AccountEmployeelDto,
+  ) {
+    const data = await this.authService.updateEmployee(idEmp, input);
+    return plainToClass(EmployeOutputDto, data);
+  }
+
+  @Delete('employee/:id')
+  @UseGuards(SystemGuard)
+  async deleteEmployee(@Param('id') idEmp: string) {
+    const data = await this.authService.deleteById(idEmp);
+    return plainToClass(EmployeOutputDto, data);
   }
 
   @Post('register')
@@ -112,5 +158,12 @@ export class AuthController {
   async loginAdminController(@Body() loginDto: LoginDto) {
     const authenticated = await this.authService.login(loginDto, true);
     return plainToClass(Authenticated, authenticated);
+  }
+
+  @Post('account-employee')
+  @UseGuards(SystemGuard)
+  async createAccountEmployee(@Body() input: AccountEmployeelDto) {
+    const data = await this.authService.createAccountEmployee(input);
+    return data;
   }
 }
