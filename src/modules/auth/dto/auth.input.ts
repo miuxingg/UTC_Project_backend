@@ -94,3 +94,20 @@ export class AccountEmployeelDto {
   @IsOptional()
   roles?: string;
 }
+
+export class ForgotPassword {
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail({})
+  email: string;
+}
+
+export class ChangePassword {
+  @IsString()
+  @MinLength(6)
+  currentPassword: string;
+
+  @IsString()
+  @MinLength(6)
+  newPassword: string;
+}

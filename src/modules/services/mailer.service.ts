@@ -53,4 +53,16 @@ export class MailerService {
       },
     });
   }
+
+  forgotPassword(to, { password, email }) {
+    this.mailer.sendMail({
+      to,
+      subject: 'Your password',
+      template: 'forgotPassword',
+      context: {
+        password,
+        email,
+      },
+    });
+  }
 }
