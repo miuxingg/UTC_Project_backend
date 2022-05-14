@@ -15,6 +15,7 @@
   "campaignInvalid": "campaignInvalid",
   "isNotExistedInOrganization": "IS_NOT_EXISTED_IN_ORGANIZATION: $property",
   "incorrectPassword": "incorrect.password",
+  "duplicatePassword": "incorrect.duplicatePassword",
   "incorrectEmail": "incorrect.email",
   "passwordMinLength": "password.minLength",
   "isNotUser": "user.isNotUser",

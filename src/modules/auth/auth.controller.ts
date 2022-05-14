@@ -16,12 +16,16 @@ import { Public } from 'src/libs/decorators/public.decorator';
 import { User } from 'src/libs/decorators/user.decorator';
 import { SystemGuard } from 'src/libs/Guard/system.guard';
 import { decodeBase64, encodeBase64 } from 'src/utils';
+import { transformValidationMessage } from 'src/utils/helper';
 import { IIAMUser } from 'src/utils/types';
 import { CacheService } from '../services/cache.service';
 import { AuthService } from './auth.service';
+import * as messages from '../resources/errorMessage.json';
 import {
   AccountEmployeelDto,
+  ChangePassword,
   CredentialDto,
+  ForgotPassword,
   LoginDto,
   UpdateProfileInputDto,
 } from './dto/auth.input';
@@ -165,5 +169,28 @@ export class AuthController {
   async createAccountEmployee(@Body() input: AccountEmployeelDto) {
     const data = await this.authService.createAccountEmployee(input);
     return data;
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() input: ForgotPassword) {
+    return await this.authService.forgotPassword(input);
+  }
+
+  @Post('change-password')
+  async changePassword(
+    @User() iiamUser: IIAMUser,
+    @Body() input: ChangePassword,
+  ) {
+    const user = await this.authService.findById(iiamUser?.id);
+    if (!user?.id) {
+      throw new BadRequestException(
+        transformValidationMessage(messages.incorrectEmail, 'user', ['User']),
+      );
+    }
+    return await this.authService.changePassword(
+      user.id,
+      input.currentPassword,
+      input.newPassword,
+    );
   }
 }

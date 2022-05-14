@@ -11,7 +11,11 @@ import { ServiceBase } from 'src/common/ServiceBase';
 import { comparePassword, encryptPassword } from 'src/utils/encryptPassword';
 import { transformValidationMessage } from 'src/utils/helper';
 import { MailerService } from '../services/mailer.service';
-import { AccountEmployeelDto, CredentialDto } from './dto/auth.input';
+import {
+  AccountEmployeelDto,
+  CredentialDto,
+  ForgotPassword,
+} from './dto/auth.input';
 import { User, UserDocument } from './schema/auth.schema';
 import * as messages from '../resources/errorMessage.json';
 import { generateToken } from 'src/utils/generateToken';
@@ -140,5 +144,56 @@ export class AuthService extends ServiceBase<UserDocument> {
     employee.roles = input.roles;
     await employee.save();
     return employee;
+  }
+
+  async forgotPassword(emails: ForgotPassword) {
+    const user = await this.model.findOne({ email: emails.email });
+    if (!user) {
+      throw new BadRequestException(
+        transformValidationMessage(messages.incorrectEmail, 'email', ['Email']),
+      );
+    }
+    const password = makeId(8);
+    const encryptPassw = await encryptPassword(password);
+    user.password = encryptPassw;
+    await user.save();
+    await this.mailerService.forgotPassword(emails.email, {
+      email: emails.email,
+      password: password,
+    });
+    return user;
+  }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    const user = await this.model.findById(userId);
+    const _isCheckPassword = await comparePassword(
+      user.password,
+      currentPassword,
+    );
+
+    if (!_isCheckPassword) {
+      throw new BadRequestException(
+        transformValidationMessage(messages.incorrectPassword, 'password', [
+          'Password',
+        ]),
+      );
+    }
+
+    if (currentPassword === newPassword) {
+      throw new BadRequestException(
+        transformValidationMessage(messages.duplicatePassword, 'password', [
+          'Password',
+        ]),
+      );
+    }
+
+    const encryptPassw = await encryptPassword(newPassword);
+    user.password = encryptPassw;
+    await user.save();
+    return user;
   }
 }
