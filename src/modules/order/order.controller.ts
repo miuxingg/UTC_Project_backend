@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -13,8 +15,6 @@ import { User } from 'src/libs/decorators/user.decorator';
 import { ManagementGuard } from 'src/libs/Guard/management.guard';
 import { IIAMUser } from 'src/utils/types';
 import { AuthService } from '../auth/auth.service';
-import { CartService } from '../cart/cart.service';
-import { OrderLineService } from '../order-line/order-line.service';
 import { SocketsGateway } from '../socket/socket.gateway';
 import { EventNames } from '../socket/types/eventName';
 import { OrderHistoryQuery, OrderInputDto } from './dto/input.dto';
@@ -72,6 +72,24 @@ export class OrderController {
         id: response?._id,
         status: response?.status,
       });
+    }
+    return plainToClass(OrderOutputDto, response);
+  }
+
+  @Put('/status/:id')
+  async userUpdateStatusOrder(
+    @User() iamUser: IIAMUser,
+    @Param('id') id: string,
+    @Body() input: OrderHistoryQuery,
+  ) {
+    const user = await this.userService.findById(iamUser.id);
+    if (!user) {
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
+    }
+    const response = await this.orderService.updateStatusOrder(id, input);
+    const orderUser = await this.userService.findById(response?.user);
+    if (orderUser?.id !== user.id) {
+      throw new HttpException('UNAUTHORIZED', HttpStatus.UNAUTHORIZED);
     }
 
     return plainToClass(OrderOutputDto, response);

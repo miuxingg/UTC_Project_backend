@@ -34,5 +34,5 @@ export class OrderInputDto {
 
 export class OrderHistoryQuery extends BaseQuery {
   @IsString()
-  status: IOrderStatus;
+  status: string;
 }

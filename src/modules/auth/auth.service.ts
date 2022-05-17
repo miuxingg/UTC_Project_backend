@@ -19,7 +19,7 @@ import {
 import { User, UserDocument } from './schema/auth.schema';
 import * as messages from '../resources/errorMessage.json';
 import { generateToken } from 'src/utils/generateToken';
-import { EXPRIRE_TOKEN } from 'src/configs';
+import { DEFAULT_PASSWORD, EXPRIRE_TOKEN } from 'src/configs';
 import { DashboardRolesAccess, Roles } from 'src/configs/roles.config';
 import { BaseQuery } from 'src/common/BaseDTO';
 import { aggregateQuery } from 'src/common/Aggregate';
@@ -185,7 +185,7 @@ export class AuthService extends ServiceBase<UserDocument> {
 
     if (currentPassword === newPassword) {
       throw new BadRequestException(
-        transformValidationMessage(messages.duplicatePassword, 'password', [
+        transformValidationMessage(messages?.duplicatePassword, 'password', [
           'Password',
         ]),
       );
@@ -195,5 +195,38 @@ export class AuthService extends ServiceBase<UserDocument> {
     user.password = encryptPassw;
     await user.save();
     return user;
+  }
+
+  async googleLogin(req) {
+    if (!req.user) {
+      throw new HttpException('Không tìm thấy user', HttpStatus.NOT_FOUND);
+    }
+
+    const { given_name, family_name, picture, email } = req.user._json;
+    const _isCheckEmailExist = await this.userModel.findOne({
+      email,
+    });
+
+    if (_isCheckEmailExist) {
+      return {
+        access_token: generateToken(
+          _isCheckEmailExist._id,
+          _isCheckEmailExist.roles,
+        ),
+        expires_in: EXPRIRE_TOKEN,
+      };
+    } else {
+      const createUser = await this.model.create({
+        password: await encryptPassword(DEFAULT_PASSWORD),
+        firstName: given_name,
+        lastName: family_name,
+        email: email,
+        avatar: picture,
+      });
+      return {
+        access_token: generateToken(createUser._id, createUser.roles),
+        expires_in: EXPRIRE_TOKEN,
+      };
+    }
   }
 }
