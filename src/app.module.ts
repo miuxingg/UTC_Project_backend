@@ -18,6 +18,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { SocketModule } from './modules/socket/socket.module';
 import { PublisherModule } from './modules/publisher/publisher.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
+import { GoogleStrategy } from './modules/strategy/google.strategy';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -40,6 +41,6 @@ import { FavoriteModule } from './modules/favorite/favorite.module';
     // ServicesModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [GoogleStrategy],
 })
 export class AppModule {}

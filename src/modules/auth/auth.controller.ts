@@ -4,10 +4,12 @@ import {
   Controller,
   Delete,
   Get,
+  Header,
   Param,
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
@@ -35,7 +37,7 @@ import {
   ProfileDto,
   ResponseDto,
 } from './dto/auth.output';
-
+import { AuthGuard } from '@nestjs/passport';
 @Controller('auth')
 @Public()
 export class AuthController {
@@ -43,6 +45,12 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly cacheService: CacheService,
   ) {}
+
+  @Get('callback')
+  @UseGuards(AuthGuard('google'))
+  googleAuthRedirect(@Req() req) {
+    return this.authService.googleLogin(req);
+  }
 
   @Get('profile')
   async getProfile(@User() iiamUser: IIAMUser) {
@@ -192,5 +200,10 @@ export class AuthController {
       input.currentPassword,
       input.newPassword,
     );
+  }
+  @Get('login-google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Req() req) {
+    console.log(req);
   }
 }
