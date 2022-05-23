@@ -19,6 +19,8 @@ import { SocketModule } from './modules/socket/socket.module';
 import { PublisherModule } from './modules/publisher/publisher.module';
 import { FavoriteModule } from './modules/favorite/favorite.module';
 import { GoogleStrategy } from './modules/strategy/google.strategy';
+import { BlogModule } from './modules/blog/blog.module';
+import { ConfigsModule } from './modules/configs/configs.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -38,6 +40,8 @@ import { GoogleStrategy } from './modules/strategy/google.strategy';
     SocketModule,
     PublisherModule,
     FavoriteModule,
+    BlogModule,
+    ConfigsModule,
     // ServicesModule,
   ],
   controllers: [],

@@ -50,3 +50,7 @@ export enum IOrderStatus {
   Rejected = 'rejected',
   Shipping = 'shipping',
 }
+
+export interface IConfig {
+  blog: string[];
+}
