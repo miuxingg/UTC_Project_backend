@@ -21,12 +21,15 @@ import { FavoriteModule } from './modules/favorite/favorite.module';
 import { GoogleStrategy } from './modules/strategy/google.strategy';
 import { BlogModule } from './modules/blog/blog.module';
 import { ConfigsModule } from './modules/configs/configs.module';
+import { VoucherModule } from './modules/voucher/voucher.module';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(MONGO_CONNECTION),
     MailerModule.forRoot(mailerOptions),
     CacheModule.register({ isGlobal: true, ttl: 900 }),
+    ScheduleModule.forRoot(),
     CatsModule,
     BooksModule,
     CategoryModule,
@@ -42,6 +45,7 @@ import { ConfigsModule } from './modules/configs/configs.module';
     FavoriteModule,
     BlogModule,
     ConfigsModule,
+    VoucherModule,
     // ServicesModule,
   ],
   controllers: [],
