@@ -3,4 +3,6 @@ export enum EventNames {
   LeaveRoom = '__leave_room__',
   NewReview = 'new_review',
   UpdateOrderStatus = 'update_order_status',
+  UpdateVoucherExpire = 'update_voucher_expire',
+  UpdateVoucherReady = 'update_voucher_ready',
 }
