@@ -1,6 +1,5 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CatsModule } from './modules/cats/cats.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BooksModule } from './modules/books/books.module';
 import { CategoryModule } from './modules/category/category.module';
@@ -30,7 +29,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     MailerModule.forRoot(mailerOptions),
     CacheModule.register({ isGlobal: true, ttl: 900 }),
     ScheduleModule.forRoot(),
-    CatsModule,
     BooksModule,
     CategoryModule,
     AddressModule,

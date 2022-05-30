@@ -11,6 +11,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { VI_TIMEZONE } from 'src/configs';
 import { SocketsGateway } from '../socket/socket.gateway';
 import { EventNames } from '../socket/types/eventName';
+import { plainToClass } from 'class-transformer';
+import { VoucherOutputDto } from './dto/output.dto';
 
 @Injectable()
 export class VoucherService extends ServiceBase<VoucherDocument> {
@@ -70,35 +72,17 @@ export class VoucherService extends ServiceBase<VoucherDocument> {
     return voucherDocument;
   }
 
-  // async getVoucherPending() {
-  //   const currentTime = new Date();
-  //   const [voucherPending] = await this.model.aggregate([
-  //     {
-  //       $match: {
-  //         documentStatus: DocumentStatus.Pending,
-  //         startDate: { $lte: currentTime },
-  //       },
-  //     },
-  //     ...aggregatePagination({}),
-  //   ]);
-  //   return voucherPending;
-  // }
-
   @Cron(CronExpression.EVERY_10_SECONDS, { timeZone: VI_TIMEZONE })
   async handleUpdateVoucher() {
-    console.log('cron update voucher');
-
     const currentTime = new Date();
     const vouchersPending = await this.model.find({
       startDate: { $lte: currentTime },
       documentStatus: { $eq: DocumentStatus.Pending },
     });
     vouchersPending.forEach(async (voucher) => {
-      console.log('Pending: ', voucher);
-
       voucher.documentStatus = DocumentStatus.Approved;
       this.socketsGateway.sendEvent(EventNames.UpdateVoucherReady, {
-        id: voucher.id,
+        data: plainToClass(VoucherOutputDto, voucher),
       });
 
       await voucher.save();
@@ -109,12 +93,9 @@ export class VoucherService extends ServiceBase<VoucherDocument> {
       documentStatus: { $eq: DocumentStatus.Approved },
     });
     vouchersApproved.forEach(async (voucher) => {
-      console.log('Approved: ', voucher);
       voucher.documentStatus = DocumentStatus.Rejected;
-
-      voucher.documentStatus = DocumentStatus.Approved;
       this.socketsGateway.sendEvent(EventNames.UpdateVoucherExpire, {
-        id: voucher.id,
+        data: plainToClass(VoucherOutputDto, voucher),
       });
 
       await voucher.save();
