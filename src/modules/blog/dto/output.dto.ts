@@ -10,4 +10,6 @@ export class BlogOutpputDto extends ClassBase {
   @Expose() documentStatus: string;
 
   @Expose() createdAt: Date;
+
+  @Expose() image: string;
 }

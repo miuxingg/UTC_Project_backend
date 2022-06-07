@@ -17,6 +17,9 @@ export class Blog {
     enum: Object.values(DocumentStatus), // Is the book displayed?
   })
   documentStatus: string;
+
+  @Prop({ required: true })
+  image: string;
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);

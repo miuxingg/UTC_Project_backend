@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { BaseQuery } from 'src/common/BaseDTO';
 import { ManagementGuard } from 'src/libs/Guard/management.guard';
@@ -17,6 +26,19 @@ export class BlogController {
       items: plainToClass(BlogOutpputDto, response?.items ?? []),
       total: response?.total ?? 0,
     };
+  }
+
+  @Get(':id')
+  async getBlogById(@Param('id') id: string) {
+    const response = await this.blogService.findById(id);
+    return plainToClass(BlogOutpputDto, response);
+  }
+
+  @Put(':id')
+  @UseGuards(ManagementGuard)
+  async updateCategory(@Param('id') id: string, @Body() input: CreateBlog) {
+    const response = await this.blogService.updateBlog(id, input);
+    return plainToClass(BlogOutpputDto, response);
   }
 
   @Post()
