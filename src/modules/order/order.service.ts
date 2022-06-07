@@ -11,10 +11,11 @@ import { AuthService } from '../auth/auth.service';
 import { CartService } from '../cart/cart.service';
 import { OrderLineService } from '../order-line/order-line.service';
 import { OrderHistoryQuery, OrderInputDto } from './dto/input.dto';
-import { IIAMUser, IOrderStatus } from 'src/utils/types';
+import { DocumentStatus, IIAMUser, IOrderStatus } from 'src/utils/types';
 import { MailerService } from '../services/mailer.service';
 import { BooksService } from '../books/books.service';
 import { aggregateQuery } from 'src/common/Aggregate';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class OrderService extends ServiceBase<OrderDocument> {
@@ -54,6 +55,17 @@ export class OrderService extends ServiceBase<OrderDocument> {
     if (!order) {
       throw new HttpException('NOT_FOUND', HttpStatus.NOT_FOUND);
     }
+    if (input.status === IOrderStatus.Rejected) {
+      const orderLine = await this.orderLineService.findAll({
+        orderId: order.id,
+      });
+
+      orderLine.items.forEach(async (item) => {
+        const book = await this.booksService.findById(item.bookId);
+        book.quantity = book.quantity + item.quantity;
+        await book.save();
+      });
+    }
     order.status = input.status;
     await order.save();
     return order;
@@ -75,6 +87,11 @@ export class OrderService extends ServiceBase<OrderDocument> {
     });
 
     const orderResponse = await Promise.all(orderLine);
+    orderResponse.forEach(async (item) => {
+      const book = await this.booksService.findById(item.bookId);
+      book.quantity = book.quantity - item.quantity;
+      await book.save();
+    });
     let email = data.shippingMethod.email;
     let name = `${data.shippingMethod.firstName} ${data.shippingMethod.lastName}`;
     if (user) {
@@ -82,13 +99,89 @@ export class OrderService extends ServiceBase<OrderDocument> {
       email = user.email;
       name = `${user.firstName} ${user.lastName}`;
     }
-    console.log(email, name);
-    // const line = orderResponse.map((item) => {
-    //   return { name: item.bookId };
-    // });
-    // if (email) {
-    //   this.mailerService.thanksTo(email, { name, orderLine: line });
-    // }
+    const line = orderResponse.map(async (item) => {
+      const [response] = await this.booksService.getBookById(item.bookId);
+      return response;
+    });
+    const booksInOrder = await Promise.all(line);
+
+    const orderSendMail = booksInOrder.map((item) => {
+      return { name: item.name, price: item.price };
+    });
+
+    if (email) {
+      this.mailerService.thanksTo(email, { name, orderLine: orderSendMail });
+    }
     return orderResponse;
+  }
+
+  async statistics() {
+    const orderDetails = await this.model.aggregate([
+      {
+        $match: {
+          status: IOrderStatus.Success,
+        },
+      },
+      ...populateOrderLines,
+    ]);
+    const statisticOrder = orderDetails.reduce(
+      (pre, cur) => {
+        const numberBooks: number = cur.orderLines.reduce((total, line) => {
+          return total + line.quantity;
+        }, 0);
+        return {
+          totalMoney: pre.totalMoney + cur.totalMoney,
+          numberOfBooksSold: pre.numberOfBooksSold + numberBooks,
+        };
+      },
+      {
+        totalMoney: 0,
+        numberOfBooksSold: 0,
+      },
+    );
+    const totalBooksAvailable = await this.booksService.findAll({
+      documentStatus: DocumentStatus.Approved,
+    });
+    const booksInventory = await this.booksService.booksInventory();
+    const statistic = {
+      ...statisticOrder,
+      booksAvailable: totalBooksAvailable.total,
+      booksInventory,
+    };
+    return statistic;
+  }
+  async statisticDataset() {
+    const orderDetails = await this.model.aggregate([
+      {
+        $match: {
+          status: IOrderStatus.Success,
+        },
+      },
+      ...populateOrderLines,
+    ]);
+
+    const dataset = orderDetails.reduce(
+      (pre, cur) => {
+        const month = dayjs(cur.createdAt).month() + 1;
+        const numberBooks: number = cur.orderLines.reduce((total, line) => {
+          return total + line.quantity;
+        }, 0);
+        return {
+          money: {
+            ...pre?.money,
+            [month]: (pre?.money?.[month] || 0) + cur.totalMoney,
+          },
+          quantity: {
+            ...pre?.quantity,
+            [month]: (pre?.quantity?.[month] || 0) + numberBooks,
+          },
+        };
+      },
+      {
+        money: {},
+        quantity: {},
+      },
+    );
+    return dataset;
   }
 }

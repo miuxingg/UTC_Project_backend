@@ -9,7 +9,6 @@ import { mailerOptions } from './configs/mailer.config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MONGO_CONNECTION } from './configs/mongodb.config';
 import { CartModule } from './modules/cart/cart.module';
-import { ServicesModule } from './modules/services/services.module';
 import { OrderModule } from './modules/order/order.module';
 import { OrderLineModule } from './modules/order-line/order-line.module';
 import { PaymentModule } from './modules/payment/payment.module';
@@ -44,7 +43,6 @@ import { ScheduleModule } from '@nestjs/schedule';
     BlogModule,
     ConfigsModule,
     VoucherModule,
-    // ServicesModule,
   ],
   controllers: [],
   providers: [GoogleStrategy],

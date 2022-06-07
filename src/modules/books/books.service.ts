@@ -22,6 +22,7 @@ import { aggregateQuery } from 'src/common/Aggregate';
 import { filterByPrice } from 'src/utils/buildQueryBook';
 import { OrderLineService } from '../order-line/order-line.service';
 import { BaseQuery } from 'src/common/BaseDTO';
+import { DocumentStatus } from 'src/utils/types';
 
 @Injectable()
 export class BooksService extends ServiceBase<BookDocument> {
@@ -203,5 +204,19 @@ export class BooksService extends ServiceBase<BookDocument> {
     bookDocument.documentStatus = data.documentStatus;
     await bookDocument.save();
     return bookDocument;
+  }
+
+  async booksInventory() {
+    const bookAvailable = await this.model
+      .find({
+        documentStatus: DocumentStatus.Approved,
+      })
+      .lean();
+
+    const inventory = bookAvailable.reduce((pre, cur) => {
+      return pre + cur.quantity;
+    }, 0);
+
+    return inventory;
   }
 }

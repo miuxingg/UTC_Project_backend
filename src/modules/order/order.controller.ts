@@ -58,6 +58,16 @@ export class OrderController {
     };
   }
 
+  @Get('statistics')
+  async statistic() {
+    return await this.orderService.statistics();
+  }
+
+  @Get('statistics/dataset')
+  async statisticDataset() {
+    return await this.orderService.statisticDataset();
+  }
+
   @Put(':id')
   @UseGuards(ManagementGuard)
   async updateStatusOrder(

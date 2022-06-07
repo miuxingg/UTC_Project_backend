@@ -10,4 +10,7 @@ export class CreateBlog {
   @IsString()
   @IsOptional()
   documentStatus: string;
+
+  @IsString()
+  image: string;
 }

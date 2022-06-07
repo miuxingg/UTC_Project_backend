@@ -1,13 +1,7 @@
-import {
-  IsArray,
-  IsMongoId,
-  IsNumber,
-  IsObject,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsNumber, IsObject, IsString } from 'class-validator';
 import { BaseQuery } from 'src/common/BaseDTO';
 import { OrderLineInputFromOrderDto } from 'src/modules/order-line/dto/input.dto';
-import { IOrderStatus, IShippingMethod } from 'src/utils/types';
+import { IShippingMethod } from 'src/utils/types';
 
 export class OrderInputDto {
   @IsNumber()
