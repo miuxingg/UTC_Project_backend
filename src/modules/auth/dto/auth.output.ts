@@ -37,4 +37,5 @@ export class EmployeOutputDto extends ClassBase {
   @Expose() roles?: string;
   @Expose() firstName?: string;
   @Expose() lastName?: string;
+  @Expose() avatar?: string;
 }

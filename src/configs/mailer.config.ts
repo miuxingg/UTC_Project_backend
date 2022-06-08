@@ -3,7 +3,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { getEnv } from 'src/utils/getEnv';
 
 const username = getEnv('EMAIL_USERNAME', 'bookstore.project.utc@gmail.com');
-const password = getEnv('EMAIL_PASSWORD', 'ThanhBinh2k');
+const password = getEnv('EMAIL_PASSWORD', 'vktzodktwjvoxrpe');
 
 export const mailerOptions: MailerOptions = {
   transport: {

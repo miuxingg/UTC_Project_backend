@@ -11,7 +11,12 @@ import { AuthService } from '../auth/auth.service';
 import { CartService } from '../cart/cart.service';
 import { OrderLineService } from '../order-line/order-line.service';
 import { OrderHistoryQuery, OrderInputDto } from './dto/input.dto';
-import { DocumentStatus, IIAMUser, IOrderStatus } from 'src/utils/types';
+import {
+  DocumentStatus,
+  IIAMUser,
+  IOrderStatus,
+  IPaymentStatus,
+} from 'src/utils/types';
 import { MailerService } from '../services/mailer.service';
 import { BooksService } from '../books/books.service';
 import { aggregateQuery } from 'src/common/Aggregate';
@@ -67,6 +72,9 @@ export class OrderService extends ServiceBase<OrderDocument> {
       });
     }
     order.status = input.status;
+    if (input.status === IOrderStatus.Success) {
+      order.paymentStatus = IPaymentStatus.Success;
+    }
     await order.save();
     return order;
   }
@@ -92,6 +100,7 @@ export class OrderService extends ServiceBase<OrderDocument> {
       book.quantity = book.quantity - item.quantity;
       await book.save();
     });
+
     let email = data.shippingMethod.email;
     let name = `${data.shippingMethod.firstName} ${data.shippingMethod.lastName}`;
     if (user) {
