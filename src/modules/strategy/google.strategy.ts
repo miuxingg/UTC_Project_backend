@@ -11,8 +11,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor() {
     super({
       clientID:
-        '93718062531-5f4e9ntk0hcst18ke2kv26u0pr7tjurg.apps.googleusercontent.com',
-      clientSecret: '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',
+        '200970573554-v8qm3tftfsikng4l2umi1gdcb2jv2bl0.apps.googleusercontent.com',
+      clientSecret: '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',
       callbackURL: 'http://localhost:8000/auth/callback',
       scope: ['email', 'profile'],
       response_type: 'code',
@@ -32,7 +32,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     profile: any,
     done: VerifyCallback,
   ): Promise<any> {
-    console.log('áds');
     done(null, profile);
   }
 
