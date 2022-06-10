@@ -38,6 +38,19 @@ export class LoginDto {
   password: string;
 }
 
+export class FacebookLoginDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail({})
+  email: string;
+
+  @IsString()
+  name: string;
+
+  @IsString()
+  avatar: string;
+}
+
 export class UpdateProfileInputDto {
   @IsString()
   @IsOptional()

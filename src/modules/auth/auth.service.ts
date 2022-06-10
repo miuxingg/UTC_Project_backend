@@ -228,4 +228,32 @@ export class AuthService extends ServiceBase<UserDocument> {
       };
     }
   }
+
+  async facebookLogin(email: string, name: string, picture: string) {
+    const _isCheckEmailExist = await this.userModel.findOne({
+      email,
+    });
+    const userName = name.split(' ');
+    if (_isCheckEmailExist) {
+      return {
+        access_token: generateToken(
+          _isCheckEmailExist._id,
+          _isCheckEmailExist.roles,
+        ),
+        expires_in: EXPRIRE_TOKEN,
+      };
+    } else {
+      const createUser = await this.model.create({
+        password: await encryptPassword(DEFAULT_PASSWORD),
+        firstName: userName?.[0] || '',
+        lastName: userName?.[1] || '',
+        email: email,
+        avatar: picture,
+      });
+      return {
+        access_token: generateToken(createUser._id, createUser.roles),
+        expires_in: EXPRIRE_TOKEN,
+      };
+    }
+  }
 }

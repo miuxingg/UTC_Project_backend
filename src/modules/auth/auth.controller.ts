@@ -27,6 +27,7 @@ import {
   AccountEmployeelDto,
   ChangePassword,
   CredentialDto,
+  FacebookLoginDto,
   ForgotPassword,
   LoginDto,
   UpdateProfileInputDto,
@@ -201,6 +202,17 @@ export class AuthController {
       input.newPassword,
     );
   }
+
+  @Post('facebook-login')
+  async facebookLogin(@Body() input: FacebookLoginDto) {
+    const authenticated = await this.authService.facebookLogin(
+      input.email,
+      input.name,
+      input.avatar,
+    );
+    return plainToClass(Authenticated, authenticated);
+  }
+
   @Get('login-google')
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() req) {
