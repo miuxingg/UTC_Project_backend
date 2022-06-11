@@ -47,7 +47,7 @@ export class BooksController {
   @Get('seed')
   async bookSeedData() {
     const dataPromise = BooksSeed.map(async (item) => {
-      return await this.bookService.create(item);
+      return await this.bookService.create({ ...item });
     });
     const data = await Promise.all(dataPromise);
     return data;

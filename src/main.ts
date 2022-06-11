@@ -9,7 +9,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // app.use(morgan('dev'));
-  //validation dto input
   app.useGlobalPipes(
     new ValidationPipe({
       forbidNonWhitelisted: true,

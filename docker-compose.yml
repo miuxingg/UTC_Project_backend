@@ -1,10 +1,20 @@
 version: '3.7'
 
 services:
-  app:
-    image: tmbe/node
+  backend:
+    image: book-store-backend
+    container_name: book-store-backend
     build:
       context: .
     ports:
+      - '8081:8081'
       - '8000:8000'
+    volumes:
+      - ./src/:/app/src/
+    env_file:
+      - ./.env
     restart: unless-stopped
+    networks:
+      - test-network
+networks:
+  test-network:

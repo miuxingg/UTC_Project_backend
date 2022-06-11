@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: test-nginx
+    ports:
+      - '80:80'
+    networks:
+      - test2-network
+networks:
+  test2-network:
+    name: utc_project_backend_test-network
