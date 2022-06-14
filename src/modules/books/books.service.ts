@@ -38,9 +38,14 @@ export class BooksService extends ServiceBase<BookDocument> {
 
   async getAllBook(queries?: BookQuery, userId?: string) {
     let match = {};
-    if (queries && queries.status) {
-      match['status'] = { $eq: queries.status };
+    if (queries && queries.documentStatus) {
+      match['documentStatus'] = queries.documentStatus;
     }
+
+    if (queries && queries.status) {
+      match['status'] = queries.status;
+    }
+
     if (queries && queries?.category) {
       match['category'] = { $in: [new Types.ObjectId(queries.category)] };
     }

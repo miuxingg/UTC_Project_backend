@@ -87,6 +87,10 @@ export class BookQuery extends BaseQuery {
   @IsString()
   @IsOptional()
   status?: string;
+
+  @IsString()
+  @IsOptional()
+  documentStatus?: string;
 }
 
 export class BookByIds {
