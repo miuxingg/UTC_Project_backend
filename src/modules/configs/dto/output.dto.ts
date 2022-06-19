@@ -7,4 +7,10 @@ export class ConfigOutputDto extends ClassBase {
   @Expose()
   @Type(() => BlogOutpputDto)
   blog: string[];
+
+  @Expose()
+  shopInfomation: any;
+
+  @Expose()
+  shippingMoney: number;
 }

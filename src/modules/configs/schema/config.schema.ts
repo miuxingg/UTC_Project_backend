@@ -13,6 +13,12 @@ export class Config {
     ref: Blog.name,
   })
   blog: string[];
+
+  @Prop({ default: 0 })
+  shippingMoney: number;
+
+  @Prop({ type: Object })
+  shopInfomation: any;
 }
 
 export const populateConfig = [
