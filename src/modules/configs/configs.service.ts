@@ -19,7 +19,15 @@ export class ConfigsService extends ServiceBase<ConfigDocument> {
   async updateConfig(input: CreateConfig) {
     const configDocument = await this.model.findOne();
     if (configDocument) {
-      configDocument.blog = input.blog;
+      if (input?.blog) {
+        configDocument.blog = input.blog;
+      }
+      if (input?.shippingMoney) {
+        configDocument.shippingMoney = input.shippingMoney;
+      }
+      if (input?.shopInfomation) {
+        configDocument.shopInfomation = input.shopInfomation;
+      }
       const data = await configDocument.save();
       return data;
     } else {

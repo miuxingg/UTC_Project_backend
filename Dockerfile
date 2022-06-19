@@ -14,4 +14,4 @@ COPY . .
 
 EXPOSE 8081
 
-CMD ["yarn",  "start"]
+CMD ["yarn",  "start:dev"]
