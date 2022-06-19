@@ -1,4 +1,11 @@
-import { IsArray, IsNumber, IsObject, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsInt,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { BaseQuery } from 'src/common/BaseDTO';
 import { OrderLineInputFromOrderDto } from 'src/modules/order-line/dto/input.dto';
 import { IShippingMethod } from 'src/utils/types';
@@ -29,4 +36,10 @@ export class OrderInputDto {
 export class OrderHistoryQuery extends BaseQuery {
   @IsString()
   status: string;
+}
+
+export class StatisticQuery {
+  // @IsNumber()
+  @IsOptional()
+  year?: string;
 }

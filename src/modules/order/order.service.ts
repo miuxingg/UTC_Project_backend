@@ -10,7 +10,11 @@ import { Model, Types } from 'mongoose';
 import { AuthService } from '../auth/auth.service';
 import { CartService } from '../cart/cart.service';
 import { OrderLineService } from '../order-line/order-line.service';
-import { OrderHistoryQuery, OrderInputDto } from './dto/input.dto';
+import {
+  OrderHistoryQuery,
+  OrderInputDto,
+  StatisticQuery,
+} from './dto/input.dto';
 import {
   DocumentStatus,
   IIAMUser,
@@ -159,11 +163,19 @@ export class OrderService extends ServiceBase<OrderDocument> {
     };
     return statistic;
   }
-  async statisticDataset() {
+  async statisticDataset(queries?: StatisticQuery) {
     const orderDetails = await this.model.aggregate([
       {
         $match: {
           status: IOrderStatus.Success,
+        },
+      },
+      {
+        $set: { year: { $year: '$createdAt' } },
+      },
+      {
+        $match: {
+          year: +queries?.year || 2022,
         },
       },
       ...populateOrderLines,

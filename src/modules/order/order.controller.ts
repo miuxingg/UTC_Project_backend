@@ -12,12 +12,17 @@ import {
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { User } from 'src/libs/decorators/user.decorator';
+import { EmployeeGuard } from 'src/libs/Guard/employee.guard';
 import { ManagementGuard } from 'src/libs/Guard/management.guard';
 import { IIAMUser } from 'src/utils/types';
 import { AuthService } from '../auth/auth.service';
 import { SocketsGateway } from '../socket/socket.gateway';
 import { EventNames } from '../socket/types/eventName';
-import { OrderHistoryQuery, OrderInputDto } from './dto/input.dto';
+import {
+  OrderHistoryQuery,
+  OrderInputDto,
+  StatisticQuery,
+} from './dto/input.dto';
 import { OrderOutputDto } from './dto/output.dto';
 import { OrderService } from './order.service';
 
@@ -59,13 +64,15 @@ export class OrderController {
   }
 
   @Get('statistics')
+  @UseGuards(EmployeeGuard)
   async statistic() {
     return await this.orderService.statistics();
   }
 
-  @Get('statistics/dataset')
-  async statisticDataset() {
-    return await this.orderService.statisticDataset();
+  @Get('/statistics/dataset')
+  @UseGuards(EmployeeGuard)
+  async statisticDataset(@Query() queries: StatisticQuery) {
+    return await this.orderService.statisticDataset(queries);
   }
 
   @Put(':id')
