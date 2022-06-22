@@ -164,6 +164,7 @@ export class OrderService extends ServiceBase<OrderDocument> {
     return statistic;
   }
   async statisticDataset(queries?: StatisticQuery) {
+    const currentYear = new Date().getFullYear();
     const orderDetails = await this.model.aggregate([
       {
         $match: {
@@ -175,7 +176,7 @@ export class OrderService extends ServiceBase<OrderDocument> {
       },
       {
         $match: {
-          year: +queries?.year || 2022,
+          year: +queries?.year || currentYear,
         },
       },
       ...populateOrderLines,

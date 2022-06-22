@@ -27,7 +27,18 @@ export class CategoryController {
       items: plainToClass(CategoryOutput, response.items ?? []),
       total: response.total ?? 0,
     };
-    // return await this.categoryService.getAllCategory();
+  }
+
+  @Get('/admin')
+  @UseGuards(ManagementGuard)
+  async getAllCategoryByAdmin(@Query() queries?: BaseQuery) {
+    const [response] = await this.categoryService.getAllCategoriesByAdmin(
+      queries,
+    );
+    return {
+      items: plainToClass(CategoryOutput, response.items ?? []),
+      total: response.total ?? 0,
+    };
   }
 
   @Get(':id')

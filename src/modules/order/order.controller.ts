@@ -45,7 +45,6 @@ export class OrderController {
       user?.id,
       queries,
     );
-    // return response;
     return {
       items: plainToClass(OrderOutputDto, response?.items ?? []),
       total: response?.total ?? 0,
@@ -56,7 +55,6 @@ export class OrderController {
   @UseGuards(ManagementGuard)
   async getOrderLineByAdmin(@Query() queries: OrderHistoryQuery) {
     const [response] = await this.orderService.getAllOrderByAdmin(queries);
-    // return response;
     return {
       items: plainToClass(OrderOutputDto, response?.items ?? []),
       total: response?.total ?? 0,

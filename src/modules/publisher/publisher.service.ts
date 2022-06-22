@@ -6,6 +6,7 @@ import { Model, Types } from 'mongoose';
 import { BaseQuery } from 'src/common/BaseDTO';
 import { aggregateQuery } from 'src/common/Aggregate';
 import { PublisherInputDto } from './dto/input.dto';
+import { DocumentStatus } from 'src/utils/types';
 
 @Injectable()
 export class PublisherService extends ServiceBase<PublisherDocument> {
@@ -16,6 +17,20 @@ export class PublisherService extends ServiceBase<PublisherDocument> {
   }
 
   async getAllPublisher(queries: BaseQuery) {
+    const match = {
+      status: DocumentStatus.Approved,
+    };
+    if (queries && queries?.search) {
+      match['$text'] = { $search: queries.search };
+    }
+    return await this.model.aggregate([
+      { $match: match },
+      { $sort: { _id: -1 } },
+      ...aggregateQuery(queries),
+    ]);
+  }
+
+  async getAllPublisherAdmin(queries: BaseQuery) {
     const match = {};
     if (queries && queries?.search) {
       match['$text'] = { $search: queries.search };
