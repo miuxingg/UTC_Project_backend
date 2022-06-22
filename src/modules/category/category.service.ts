@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { CreateCategoryDto } from './dto/input.dto';
 import { BaseQuery } from 'src/common/BaseDTO';
 import { aggregateQuery } from 'src/common/Aggregate';
+import { DocumentStatus } from 'src/utils/types';
 
 @Injectable()
 export class CategoryService extends ServiceBase<CategoryDocument> {
@@ -16,6 +17,20 @@ export class CategoryService extends ServiceBase<CategoryDocument> {
   }
 
   async getAllCategories(queries?: BaseQuery) {
+    const match = {
+      status: DocumentStatus.Approved,
+    };
+    if (queries && queries?.search) {
+      match['$text'] = { $search: queries.search };
+    }
+    return await this.model.aggregate([
+      { $match: match },
+      { $sort: { _id: -1 } },
+      ...aggregateQuery(queries),
+    ]);
+  }
+
+  async getAllCategoriesByAdmin(queries?: BaseQuery) {
     const match = {};
     if (queries && queries?.search) {
       match['$text'] = { $search: queries.search };

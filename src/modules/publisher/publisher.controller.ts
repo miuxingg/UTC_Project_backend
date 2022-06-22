@@ -30,6 +30,18 @@ export class PublisherController {
     };
   }
 
+  @Get('/admin')
+  @UseGuards(ManagementGuard)
+  async getAllPublisherAdmin(@Query() queries?: BaseQuery) {
+    const [response] = await this.publisherService.getAllPublisherAdmin(
+      queries,
+    );
+    return {
+      items: plainToClass(PublisherOutputDto, response?.items ?? []),
+      total: response?.total ?? 0,
+    };
+  }
+
   @Get(':id')
   async getPublisherById(@Param('id') id: string) {
     const response = await this.publisherService.findById(id);
